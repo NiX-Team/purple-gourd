@@ -19,6 +19,15 @@ export default [
     module: {
       rules: [
         {
+          test: /\.(mjs|js)$/,
+          enforce: 'pre',
+          loader: 'eslint-loader',
+          options: {
+            ignore: false,
+            useEslintrc: true,
+          },
+        },
+        {
           test: /(\.mjs|\.js)$/,
           use: { loader: 'babel-loader' },
           exclude: /node_modules/,

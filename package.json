@@ -1,0 +1,20 @@
+{
+  "name": "purple-gourd",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "https://github.com/NiX-Team/purple-gourd.git",
+  "author": "Yotau Hong <crazymousethief@outlook.com>",
+  "license": "GPL-3.0",
+  "scripts": {
+    "start": "npm run build && npm run server",
+    "build": "npx webpack",
+    "server": "node dist"
+  },
+  "dependencies": {
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
+    "koa": "^2.4.1",
+    "webpack": "^3.8.1"
+  }
+}

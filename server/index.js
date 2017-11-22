@@ -6,4 +6,4 @@ app.use(async ctx => {
   ctx.body = 'purple gourd'
 })
 
-app.listen(3000)
+export default app

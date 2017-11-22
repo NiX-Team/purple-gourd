@@ -5,7 +5,7 @@ import NodemonPlugin from 'nodemon-webpack-plugin'
 export default [
   {
     name: 'server',
-    entry: './index.mjs',
+    entry: './index.js',
     target: 'node',
     output: {
       path: path.resolve(process.cwd(), 'dist'),
@@ -37,6 +37,11 @@ export default [
     },
     resolve: {
       extensions: ['.js', '.json', '.mjs'],
+    },
+    watchOptions: {
+      ignore: /node_modules/,
+      aggregateTimeout: 500,
+      poll: 1000,
     },
     plugins: [new NodemonPlugin()],
   },

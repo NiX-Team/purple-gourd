@@ -8,7 +8,7 @@
   "scripts": {
     "start": "npm run build && npm run server",
     "stop": "npx pm2 stop dist",
-    "dev": "npx nodemon --exec npx babel-node index.js",
+    "dev": "npx babel-watch .",
     "build": "npx webpack",
     "server": "npx pm2 start dist"
   },
@@ -28,6 +28,6 @@
     "webpack": "^3.8.1"
   },
   "devDependencies": {
-    "nodemon": "^1.12.1"
+    "babel-watch": "^2.0.7"
   }
 }

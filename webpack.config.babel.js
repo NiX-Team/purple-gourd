@@ -1,5 +1,6 @@
 import path from 'path'
 import manifest from './package.json'
+import NodemonPlugin from 'nodemon-webpack-plugin'
 
 export default [
   {
@@ -37,5 +38,6 @@ export default [
     resolve: {
       extensions: ['.js', '.json', '.mjs'],
     },
+    plugins: [new NodemonPlugin()],
   },
 ]

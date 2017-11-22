@@ -8,11 +8,12 @@
   "scripts": {
     "start": "npm run build && npm run server",
     "stop": "npx pm2 stop dist",
-    "dev": "npx webpack --watch",
+    "dev": "npx nodemon --exec npx babel-node index.js",
     "build": "npx webpack",
     "server": "npx pm2 start dist"
   },
   "dependencies": {
+    "babel-cli": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
     "babel-register": "^6.26.0",
@@ -22,9 +23,11 @@
     "koa": "^2.4.1",
     "koa-bodyparser": "^4.2.0",
     "koa-router": "^7.3.0",
-    "nodemon-webpack-plugin": "^0.1.5",
     "pm2": "^2.7.2",
     "prettier": "^1.8.2",
     "webpack": "^3.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.1"
   }
 }

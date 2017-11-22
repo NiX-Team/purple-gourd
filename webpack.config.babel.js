@@ -1,6 +1,5 @@
 import path from 'path'
 import manifest from './package.json'
-import NodemonPlugin from 'nodemon-webpack-plugin'
 
 export default [
   {
@@ -43,6 +42,5 @@ export default [
       aggregateTimeout: 500,
       poll: 1000,
     },
-    plugins: [new NodemonPlugin()],
   },
 ]

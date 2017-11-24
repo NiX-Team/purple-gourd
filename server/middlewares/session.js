@@ -3,16 +3,11 @@ export default (opts = {}) => {
   const sessions = new Map()
 
   let sid = 0
-  sessions.set(++sid + '', 'wow')
   return async (ctx, next) => {
     let id = ctx.cookies.get(key, opts)
 
     if (!id) ctx.session = null
-    else {
-      ctx.session = sessions.get(id)
-      // if (typeof ctx.session !== 'object' || ctx.session == null)
-      //   ctx.session = {}
-    }
+    else ctx.session = sessions.get(id)
 
     const dirty = JSON.stringify(ctx.session)
 

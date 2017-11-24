@@ -1,5 +1,5 @@
 export default {
-  async login(ctx) {
+  async handleLogin(ctx) {
     let formData = ctx.request.body
 
     if (
@@ -8,7 +8,8 @@ export default {
     ) {
       ctx.body = 'login'
       ctx.session = {}
-      ctx.redirect('/')
+    } else {
+      ctx.throw(401, 'Authentication failed', { username: formData.username })
     }
   },
 }

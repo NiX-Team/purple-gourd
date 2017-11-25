@@ -8,7 +8,7 @@
   "scripts": {
     "start": "npm run build && npm run server",
     "stop": "npx pm2 stop dist",
-    "dev": "npx babel-watch .",
+    "dev": "npx babel-watch . --inspect",
     "build": "npx webpack",
     "server": "npx pm2 start dist"
   },

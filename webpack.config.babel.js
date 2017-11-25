@@ -68,6 +68,16 @@ const clientConfig = {
   module: {
     rules: [
       {
+        test: /\.(js|jsx)$/,
+        enforce: 'pre',
+        loader: 'eslint-loader',
+        include: CLIENT_PATH,
+        options: {
+          ignore: false,
+          useEslintrc: true,
+        },
+      },
+      {
         oneOf: [
           {
             test: /\.(png|jpe?g|gif|bmp|svg)$/,

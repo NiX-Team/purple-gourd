@@ -1,6 +1,5 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
-import styles from './App.css'
 
 class App extends React.Component {
   render() {

@@ -6,10 +6,10 @@ export default {
       formData.username == 'crazymousethief' &&
       formData.password == 'crazymousethief'
     ) {
-      ctx.body = 'login'
+      ctx.body = 'Authentication success'
       ctx.session = {}
     } else {
-      ctx.throw(401, 'Authentication failed', { username: formData.username })
+      ctx.throw(401, 'Authentication fail', { username: formData.username })
     }
   },
 }

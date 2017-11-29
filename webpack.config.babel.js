@@ -94,6 +94,7 @@ const clientConfig = {
             options: {
               babelrc: false,
               presets: ['babel-preset-react-app'],
+              plugins: [['import', { libraryName: 'antd', style: true }]],
               cacheDirectory: true,
             },
           },
@@ -110,6 +111,10 @@ const clientConfig = {
                 },
               },
             ],
+          },
+          {
+            test: /\.less$/,
+            loader: ['style-loader', 'css-loader', 'less-loader'],
           },
           {
             exclude: [/\.js$/, /\.html$/, /\.json$/],

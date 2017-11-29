@@ -1,10 +1,10 @@
 export default {
   async handleLogin(ctx) {
-    let formData = ctx.request.body
+    let formData = ctx.request.body.fields
 
     if (
-      formData.username == 'crazymousethief' &&
-      formData.password == 'crazymousethief'
+      formData.username === 'crazymousethief' &&
+      formData.password === 'crazymousethief'
     ) {
       ctx.body = 'Authentication success'
       ctx.session = {}

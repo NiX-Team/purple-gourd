@@ -64,6 +64,9 @@ const clientConfig = {
   },
   resolve: {
     extensions: ['.js', '.json', '.jsx'],
+    alias: {
+      '@components': path.resolve(CLIENT_PATH, './src/components'),
+    },
   },
   module: {
     rules: [

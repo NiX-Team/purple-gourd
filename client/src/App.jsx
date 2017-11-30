@@ -5,9 +5,9 @@ import {
   Redirect,
   Link,
 } from 'react-router-dom'
-import PrivateRoute from './components/Auth/PrivateRoute'
-import Login from './components/Login/index'
-import './components/Auth/Interceptors'
+import PrivateRoute from '@components/Auth/PrivateRoute'
+import Login from '@components/Login'
+import '@components/Auth/Interceptors'
 
 class App extends React.Component {
   state = {

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { message, Form, Icon, Input, Button, Checkbox } from 'antd'
-import { Auth } from '../Auth/index'
+import { Auth } from '@components/Auth'
 
 const FormItem = Form.Item
 

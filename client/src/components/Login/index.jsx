@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Form, Icon, Input, Button, Checkbox } from 'antd'
+import { message, Form, Icon, Input, Button, Checkbox } from 'antd'
+import { Auth } from '../Auth/index'
 
 const FormItem = Form.Item
 
@@ -9,17 +10,25 @@ class LoginForm extends React.Component {
     e.preventDefault()
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        fetch('/login', {
-          method: 'POST',
-          body: ((username, password) => {
-            let form = new FormData()
-            form.append('username', username)
-            form.append('password', password)
-            return form
-          })(values.username, values.password),
-        })
+        Auth.login(values)
+          .then(ok => {
+            if (ok) {
+              message.success('登录成功！')
+              this.props.redirect('/dashboard')
+            } else message.error('登录失败，用户名或密码错误！')
+          })
+          .catch(error => {
+            message.error(`网络错误，请检查网络！`)
+          })
       }
     })
+  }
+
+  componentDidMount() {
+    if (Auth.isAuthenticated) this.props.redirect('/dashboard')
+    else {
+      if (this.props.location.from) message.info('未登录！')
+    }
   }
 
   render() {
@@ -48,9 +57,9 @@ class LoginForm extends React.Component {
             valuePropName: 'checked',
             initialValue: true,
           })(<Checkbox>记住我</Checkbox>)}
-          <a className="login-form-forgot" href="">
+          <Link className="login-form-forgot" to="/">
             忘记密码
-          </a>
+          </Link>
           <Button
             type="primary"
             htmlType="submit"
@@ -58,7 +67,10 @@ class LoginForm extends React.Component {
           >
             登录
           </Button>
-          或 <Link to="/">立即注册</Link>
+          或
+          <Link className="login-form-register" to="/">
+            立即注册
+          </Link>
         </FormItem>
       </Form>
     )

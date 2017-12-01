@@ -2,6 +2,7 @@ import http from 'http'
 import Koa from 'koa'
 import routers from './routers'
 import session from './middlewares/session'
+import './models/mongoose'
 import devServer, { historyApiFallBack } from './middlewares/devServer'
 
 const app = new Koa()

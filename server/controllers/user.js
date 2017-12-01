@@ -1,11 +1,16 @@
+import userModel from '../models/userModel'
+
 export default {
   async handleLogin(ctx) {
-    let formData = ctx.request.body.fields
+    let formData = ctx.request.body.fields,
+      user
 
     if (
       formData &&
-      formData.username === 'crazymousethief' &&
-      formData.password === 'crazymousethief'
+      (user =
+        (await userModel.findOne({ username: formData.username })) || {}) &&
+      formData.username === user.username &&
+      formData.password === user.password
     ) {
       ctx.body = 'Authentication success'
       ctx.session = {}

@@ -15,7 +15,7 @@ const middleware = koaWebpack({
 const historyApiFallBack = () => {
   return async (ctx, next) => {
     await next()
-    let index = (ctx.response.type = 'html')
+    ctx.response.type = 'html'
     ctx.body = middleware.dev.fileSystem.readFileSync(
       path.join(clientConfig.output.path, 'index.html'),
     )

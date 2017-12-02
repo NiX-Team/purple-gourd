@@ -1,5 +1,6 @@
+let isAuthenticated = localStorage.getItem('isAuth') || false
+
 const Auth = {
-  isAuthenticated: false,
   async login(data) {
     let response
     try {
@@ -22,5 +23,14 @@ const Auth = {
     this.isAuthenticated = false
   },
 }
+
+Object.defineProperty(Auth, 'isAuthenticated', {
+  get() {
+    return isAuthenticated
+  },
+  set(newValue) {
+    localStorage.setItem('isAuth', (isAuthenticated = newValue))
+  },
+})
 
 export { Auth }

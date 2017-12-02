@@ -9,7 +9,9 @@ export default class RedisStore extends Store {
   }
 
   async get(sid) {
-    return JSON.parse(await this.redis.get(`SESSION:${sid}`))
+    return (
+      JSON.parse(await this.redis.get(`SESSION:${sid}`)) || { session: null }
+    ).session
   }
 
   async set(sid, session = {}, maxAge = ONE_DAY) {

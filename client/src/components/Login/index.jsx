@@ -14,7 +14,7 @@ class LoginForm extends React.Component {
           .then(ok => {
             if (ok) {
               message.success('登录成功！')
-              this.props.redirect('/dashboard')
+              this.props.history.push(this.props.location.from || '/dashboard')
             } else message.error('登录失败，用户名或密码错误！')
           })
           .catch(error => {
@@ -25,10 +25,8 @@ class LoginForm extends React.Component {
   }
 
   componentDidMount() {
-    if (Auth.isAuthenticated) this.props.redirect('/dashboard')
-    else {
-      if (this.props.location.from) message.info('未登录！')
-    }
+    if (Auth.isAuthenticated) this.props.history.push('/dashboard')
+    else if (this.props.location.from) message.info('未登录！')
   }
 
   render() {

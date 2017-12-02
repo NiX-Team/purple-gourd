@@ -13,9 +13,13 @@ export default {
       formData.password === user.password
     ) {
       ctx.body = 'Authentication success'
-      ctx.session = {}
+      ctx.session = { username: formData.username }
     } else {
       ctx.throw(401, 'Authentication fail')
     }
+  },
+
+  async handleGetUserInfo(ctx, next) {
+    ctx.body = JSON.stringify({ username: ctx.session.username })
   },
 }

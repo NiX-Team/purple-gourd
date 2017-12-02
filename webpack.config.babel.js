@@ -42,7 +42,9 @@ const serverConfig = {
   },
   resolve: {
     extensions: ['.js', '.json', '.mjs'],
-    '~': path.resolve(SERVER_PATH),
+    alias: {
+      '~': path.resolve(SERVER_PATH),
+    },
   },
   watchOptions: {
     ignore: /node_modules/,
@@ -52,6 +54,7 @@ const serverConfig = {
 }
 
 const clientConfig = {
+  name: 'client',
   devtool: 'cheap-module-source-map',
   context: CLIENT_PATH,
   target: 'web',

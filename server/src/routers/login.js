@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import body from 'koa-body'
-import userController from '../controllers/user'
+import userController from '~/controllers/user'
 
 const router = new Router()
 

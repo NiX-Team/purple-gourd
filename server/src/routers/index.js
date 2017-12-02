@@ -1,7 +1,7 @@
 import Router from 'koa-router'
-import login from './login'
-import user from './user'
-import auth from '../middlewares/auth'
+import login from '~/routers/login'
+import user from '~/routers/user'
+import auth from '~/middlewares/auth'
 
 const router = new Router()
 

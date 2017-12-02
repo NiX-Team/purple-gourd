@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react", // Must have, otherwise unable to parse jsx file
+    "target": "es6",
+    "baseUrl": "./",
+    "paths": {
+      "~/*": ["server/src/*"],
+      "@/*": ["client/src/*"]
+    }
+  },
+  "include": ["./**/*"] // Must have, otherwise not working💩
+}

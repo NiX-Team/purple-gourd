@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route, Redirect } from 'react-router-dom'
-import { Auth } from '@components/Auth'
+import { Auth } from './'
 
 export default ({ component: Component, ...rest }) => {
   return (

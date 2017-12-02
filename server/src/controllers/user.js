@@ -1,4 +1,4 @@
-import userModel from '../models/userModel'
+import userModel from '~/models/userModel'
 
 export default {
   async handleLogin(ctx) {

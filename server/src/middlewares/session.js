@@ -1,5 +1,5 @@
-import RedisStore from '../models/redisStore'
-import { ONE_DAY } from '../models/memoryStore'
+import RedisStore from '~/models/redisStore'
+import { ONE_DAY } from '~/models/memoryStore'
 
 export default (opts = {}) => {
   const { key = 'session', store = new RedisStore(), maxAge = ONE_DAY } = opts

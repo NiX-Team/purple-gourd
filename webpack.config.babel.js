@@ -42,6 +42,7 @@ const serverConfig = {
   },
   resolve: {
     extensions: ['.js', '.json', '.mjs'],
+    '~': path.resolve(SERVER_PATH),
   },
   watchOptions: {
     ignore: /node_modules/,
@@ -65,7 +66,7 @@ const clientConfig = {
   resolve: {
     extensions: ['.js', '.json', '.jsx'],
     alias: {
-      '@components': path.resolve(CLIENT_PATH, './src/components'),
+      '@': path.resolve(CLIENT_PATH, './src'),
     },
   },
   module: {

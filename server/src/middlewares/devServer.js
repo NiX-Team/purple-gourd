@@ -1,7 +1,7 @@
 import path from 'path'
 import webpack from 'webpack'
 import koaWebpack from 'koa-webpack'
-import { clientConfig } from '../../webpack.config.babel'
+import { clientConfig } from '/webpack.config.babel'
 
 const middleware = koaWebpack({
   compiler: webpack(clientConfig),

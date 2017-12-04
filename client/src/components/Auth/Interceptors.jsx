@@ -1,7 +1,7 @@
 import React from 'react'
 import fetchIntercept from 'fetch-intercept'
 import { withRouter } from 'react-router'
-import { Auth } from './'
+import Auth from './AuthModel'
 
 class Interceptor extends React.Component {
   componentWillMount() {

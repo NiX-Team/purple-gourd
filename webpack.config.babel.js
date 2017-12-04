@@ -101,7 +101,10 @@ const clientConfig = {
             options: {
               babelrc: false,
               presets: ['babel-preset-react-app'],
-              plugins: [['import', { libraryName: 'antd', style: true }]],
+              plugins: [
+                ['import', { libraryName: 'antd', style: true }],
+                'transform-decorators-legacy',
+              ],
               cacheDirectory: true,
             },
           },

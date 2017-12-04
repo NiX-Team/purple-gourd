@@ -4,6 +4,7 @@
     "allowSyntheticDefaultImports": true,
     "jsx": "react", // Must have, otherwise unable to parse jsx file
     "target": "es6",
+    "experimentalDecorators": true,
     "baseUrl": "./",
     "paths": {
       "~/*": ["server/src/*"],

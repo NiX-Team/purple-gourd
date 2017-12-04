@@ -9,6 +9,7 @@
   },
   "parserOptions": {
     "ecmaFeatures": {
+      "experimentalDecorators": true,
       "jsx": true
     },
     "sourceType": "module",

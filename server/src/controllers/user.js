@@ -2,7 +2,7 @@ import userModel from '~/models/userModel'
 
 export default {
   async handleLogin(ctx) {
-    let formData = ctx.request.body.fields,
+    let formData = ctx.req.body,
       user
 
     if (

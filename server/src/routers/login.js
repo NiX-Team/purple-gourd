@@ -1,11 +1,7 @@
 import Router from 'koa-router'
-import body from 'koa-body'
+import multer from 'koa-multer'
 import userController from '~/controllers/user'
 
 const router = new Router()
 
-export default router.post(
-  '/',
-  body({ multipart: true }),
-  userController.handleLogin,
-)
+export default router.post('/', new multer().none(), userController.handleLogin)

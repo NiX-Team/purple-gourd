@@ -35,7 +35,10 @@ const serverConfig = {
       },
       {
         test: /(\.mjs|\.js)$/,
-        use: { loader: 'babel-loader' },
+        loader: 'babel-loader',
+        options: {
+          cacheDirectory: true,
+        },
         exclude: /node_modules/,
       },
     ],
@@ -99,12 +102,6 @@ const clientConfig = {
             loader: 'babel-loader',
             include: CLIENT_PATH,
             options: {
-              babelrc: false,
-              presets: ['babel-preset-react-app'],
-              plugins: [
-                ['import', { libraryName: 'antd', style: true }],
-                'transform-decorators-legacy',
-              ],
               cacheDirectory: true,
             },
           },

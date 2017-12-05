@@ -1,0 +1,27 @@
+{
+  "presets": ["babel-preset-react-app"],
+  "plugins": [
+    [
+      "import",
+      {
+        "libraryName": "antd",
+        "style": true
+      }
+    ],
+    "transform-decorators-legacy"
+  ],
+  "env": {
+    "development": {},
+    "production": {
+      "presets": [
+        [
+          "env",
+          {
+            "target": { "browsers": ["last 2 versions", "safari >= 7"] }
+          }
+        ],
+        "babel-preset-react-app"
+      ]
+    }
+  }
+}

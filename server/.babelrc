@@ -1,0 +1,27 @@
+{
+  "presets": [
+    [
+      "env",
+      {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ]
+  ],
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": ["./"],
+        "alias": {
+          "~": "./server/src"
+        }
+      }
+    ]
+  ],
+  "env": {
+    "development": {},
+    "production": {}
+  }
+}

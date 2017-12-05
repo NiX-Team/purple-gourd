@@ -1,4 +1,5 @@
 import React from 'react'
+import Upload from '@/components/Upload'
 
 export default class Dashboard extends React.Component {
   state = {}
@@ -14,6 +15,7 @@ export default class Dashboard extends React.Component {
       <div>
         <h2>Dashboard</h2>
         <p>Hello {username} !</p>
+        <Upload />
       </div>
     )
   }

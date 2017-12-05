@@ -24,7 +24,7 @@ class LoginForm extends React.Component {
     })
   }
 
-  componentDidMount() {
+  componentWillMount() {
     if (Auth.isAuthenticated) this.props.history.push('/dashboard')
     else if (this.props.location.from) message.info('未登录！')
   }

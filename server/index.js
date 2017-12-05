@@ -9,7 +9,7 @@ const app = new Koa()
 
 app
   .use(devServer())
-  .use(session({ maxAge: 60 * 1000 }))
+  .use(session())
   .use(routers.routes())
   .use(routers.allowedMethods())
   .use(historyApiFallBack())

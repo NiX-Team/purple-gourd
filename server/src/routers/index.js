@@ -9,4 +9,4 @@ const router = new Router()
 export default router
   .use('/login', login.routes(), login.allowedMethods())
   .use('/user', auth(), user.routes(), user.allowedMethods())
-  .use('/upload', upload.routes(), upload.allowedMethods())
+  .use('/upload', auth(), upload.routes(), upload.allowedMethods())

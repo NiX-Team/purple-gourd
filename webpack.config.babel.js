@@ -45,9 +45,6 @@ const serverConfig = {
   },
   resolve: {
     extensions: ['.js', '.json', '.mjs'],
-    alias: {
-      '~': path.resolve(SERVER_PATH),
-    },
   },
   watchOptions: {
     ignore: /node_modules/,
@@ -145,6 +142,7 @@ const clientConfig = {
     new HtmlWebpackPlugin({
       inject: true,
       template: path.resolve(CLIENT_PATH, 'public/index.html'),
+      favicon: 'public/favicon.ico',
     }),
   ],
 }

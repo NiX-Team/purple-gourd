@@ -7,8 +7,7 @@ export default {
 
     if (
       formData &&
-      (user =
-        (await userModel.findOne({ username: formData.username })) || {}) &&
+      (user = await userModel.findOne({ username: formData.username })) &&
       formData.username === user.username &&
       formData.password === user.password
     ) {

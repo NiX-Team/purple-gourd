@@ -1,15 +1,17 @@
 import mongoose from './mongoose'
 import { Schema } from 'mongoose'
 
-const announcementSchema = new Schema({
-  title: { type: String },
-  creator: { type: String },
-  beginTime: { type: Date },
-  endTime: { type: Date },
-  createTime: { type: Date, default: Date.now() },
-  lastModifyTime: { type: Date, default: Date.now() },
-  uploadType: { type: String },
-  formField: [{ fieldName: { type: String } }],
-})
+const announcementSchema = new Schema(
+  {
+    title: { type: String },
+    creator: { type: String },
+    beginTime: { type: Date },
+    endTime: { type: Date },
+    uploadType: { type: String },
+    description: { type: String },
+    formField: [new Schema({ fieldName: { type: String } }, { _id: false })],
+  },
+  { timestamps: true },
+)
 
 export default mongoose.model('announcement', announcementSchema)

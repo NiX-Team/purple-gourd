@@ -2,7 +2,7 @@ import announcementModel from '~/models/announcementModel'
 
 export default {
   async handleAddAnnouncement(ctx) {
-    const formData = JSON.parse(ctx.request.body),
+    const formData = ctx.request.body,
       data = new announcementModel(formData)
 
     data.creator = ctx.session.username

@@ -19,6 +19,6 @@ export default {
       ctx.throw(507, 'Storage fail')
     }
 
-    ctx.body = 'Storage complete'
+    ctx.body = { message: 'Storage complete' }
   },
 }

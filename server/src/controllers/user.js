@@ -2,7 +2,7 @@ import userModel from '~/models/userModel'
 
 export default {
   async handleLogin(ctx) {
-    let formData = ctx.req.body,
+    let formData = ctx.request.body,
       user
 
     if (
@@ -12,11 +12,9 @@ export default {
       formData.username === user.username &&
       formData.password === user.password
     ) {
-      ctx.body = 'Authentication success'
+      ctx.body = { message: 'Authentication success' }
       ctx.session = { username: formData.username }
-    } else {
-      ctx.throw(401, 'Authentication fail')
-    }
+    } else ctx.throw(401, 'Bad credentials')
   },
 
   async handleGetUserInfo(ctx, next) {

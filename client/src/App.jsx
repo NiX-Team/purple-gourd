@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 import PrivateRoute from '@/components/Auth/PrivateRoute'
 import Login from '@/components/Login'
 import Dashboard from '@/components/Dashboard'
-import Interceptor from '@/components/Auth/Interceptors'
+import Interceptor from '@/components/Auth/Interceptor'
 
 class App extends React.Component {
   render() {

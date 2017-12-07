@@ -1,13 +1,14 @@
 import React from 'react'
 import Upload from '@/components/Upload'
 import AnnouncementForm from '@/components/Announcement/Form'
+import User from '@/models/User'
 
 export default class Dashboard extends React.Component {
   state = {}
 
   async componentDidMount() {
-    let username = (await (await fetch('/user')).json()).username
-    this.setState({ username })
+    let { data } = await User.getUsername()
+    this.setState({ username: data.username })
   }
 
   render() {

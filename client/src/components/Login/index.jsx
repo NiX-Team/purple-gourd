@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { message, Form, Icon, Input, Button, Checkbox } from 'antd'
-import Auth from '@/components/Auth/AuthModel'
+import User from '@/models/User'
 
 const FormItem = Form.Item
 
@@ -10,9 +10,10 @@ class LoginForm extends React.Component {
     e.preventDefault()
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        Auth.login(values)
-          .then(ok => {
-            if (ok) {
+        User.login(values)
+          .then(res => {
+            const { response } = res
+            if (response.ok) {
               message.success('登录成功！')
               this.props.history.push(this.props.location.from || '/dashboard')
             } else message.error('登录失败，用户名或密码错误！')
@@ -25,7 +26,7 @@ class LoginForm extends React.Component {
   }
 
   componentWillMount() {
-    if (Auth.isAuthenticated) this.props.history.push('/dashboard')
+    if (User.isAuthenticated) this.props.history.push('/dashboard')
     else if (this.props.location.from) message.info('未登录！')
   }
 

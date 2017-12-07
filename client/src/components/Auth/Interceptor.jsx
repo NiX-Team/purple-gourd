@@ -1,7 +1,7 @@
 import React from 'react'
 import fetchIntercept from 'fetch-intercept'
 import { withRouter } from 'react-router'
-import Auth from './AuthModel'
+import User from '@/models/User'
 
 class Interceptor extends React.Component {
   componentWillMount() {
@@ -21,11 +21,14 @@ class Interceptor extends React.Component {
       response: function(response) {
         // Modify the response object
         // TODO: MobX will be better, or convert auth to a component ??
-        if (response.status === 403) {
-          Auth.isAuthenticated = false
-          self.props.history.push('/login')
+        switch (response.status) {
+          case 401:
+            User.isAuthenticated = false
+            self.props.history.push('/login')
+            break
+          default:
+            return response
         }
-        return response
       },
 
       responseError: function(error) {

@@ -1,11 +1,9 @@
 import Router from 'koa-router'
-import multer from 'koa-multer'
+import body from 'koa-body'
 import announcementController from '~/controllers/announcement'
 
 const router = new Router()
 
-export default router.post(
-  '/',
-  new multer().none(),
-  announcementController.handleAddAnnouncement,
-)
+export default router
+  .post('/', body(), announcementController.handleAddAnnouncement)
+  .get('/:id', announcementController.handleGetAnnouncement)

@@ -2,7 +2,7 @@ import announcementModel from '~/models/announcementModel'
 
 export default {
   async handleAddAnnouncement(ctx) {
-    const formData = ctx.req.body,
+    const formData = JSON.parse(ctx.request.body),
       data = new announcementModel(formData)
 
     data.creator = ctx.session.username
@@ -14,5 +14,10 @@ export default {
     }
 
     ctx.body = 'Post success'
+  },
+
+  async handleGetAnnouncement(ctx) {
+    let result = await announcementModel.findOne({ _id: ctx.params.id })
+    ctx.body = JSON.stringify(result)
   },
 }

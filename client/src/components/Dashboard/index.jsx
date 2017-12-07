@@ -1,5 +1,6 @@
 import React from 'react'
 import Upload from '@/components/Upload'
+import AnnouncementForm from '@/components/Announcement/Form'
 
 export default class Dashboard extends React.Component {
   state = {}
@@ -16,6 +17,7 @@ export default class Dashboard extends React.Component {
         <h2>Dashboard</h2>
         <p>Hello {username} !</p>
         <Upload />
+        <AnnouncementForm />
       </div>
     )
   }

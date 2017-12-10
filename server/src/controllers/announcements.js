@@ -1,19 +1,19 @@
-import announcementModel from '~/models/announcementModel'
+import announcementsModel from '~/models/announcementsModel'
 import { error } from '~/middlewares/error'
 
 async function findById(id) {
   let result
-  result = await announcementModel.findById(id)
+  result = await announcementsModel.findById(id)
   if (!result) throw error(404, 'No such announcement')
   return result
 }
 
 async function findByUser(username) {
-  return await announcementModel.find({ creator: username })
+  return await announcementsModel.find({ creator: username })
 }
 
 async function findByIdAndUpdate(id, doc) {
-  await announcementModel.findByIdAndUpdate(id, doc)
+  await announcementsModel.findByIdAndUpdate(id, doc)
   return doc
 }
 
@@ -22,7 +22,7 @@ async function add(data) {
 }
 
 async function remove(id) {
-  await announcementModel.findByIdAndRemove(id)
+  await announcementsModel.findByIdAndRemove(id)
 }
 
 function filter(data) {
@@ -35,7 +35,7 @@ function filter(data) {
 export default {
   async handleAddAnnouncement(ctx) {
     const jsonData = filter(ctx.request.body),
-      data = new announcementModel(jsonData)
+      data = new announcementsModel(jsonData)
 
     data.creator = ctx.session.username
 

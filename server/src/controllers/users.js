@@ -1,4 +1,4 @@
-import userModel from '~/models/userModel'
+import usersModel from '~/models/usersModel'
 
 export default {
   async handleLogin(ctx) {
@@ -7,7 +7,7 @@ export default {
 
     if (
       formData &&
-      (user = await userModel.findOne({ username: formData.username })) &&
+      (user = await usersModel.findOne({ username: formData.username })) &&
       formData.username === user.username &&
       formData.password === user.password
     ) {
@@ -16,7 +16,10 @@ export default {
     } else ctx.throw(401, 'Bad credentials')
   },
 
-  async handleGetUserInfo(ctx, next) {
-    ctx.body = JSON.stringify({ username: ctx.session.username })
+  async handleGetUserInfo(ctx) {
+    ctx.body = await usersModel.findOne(
+      { username: ctx.session.username },
+      ctx.query,
+    )
   },
 }

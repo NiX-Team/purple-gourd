@@ -1,37 +1,28 @@
 import announcementModel from '~/models/announcementModel'
+import { error } from '~/middlewares/error'
 
 async function findById(id) {
   let result
-  try {
-    result = await announcementModel.findById(id)
-    if (!result) throw new Error()
-  } catch (e) {
-    e.statusCode = 404
-    e.message = 'No such announcement'
-    throw e
-  }
+  result = await announcementModel.findById(id)
+  if (!result) throw error(404, 'No such announcement')
   return result
 }
 
+async function findByUser(username) {
+  return await announcementModel.find({ creator: username })
+}
+
 async function findByIdAndUpdate(id, doc) {
-  try {
-    await announcementModel.findByIdAndUpdate(id, doc)
-  } catch (e) {
-    e.statusCode = 507
-    e.message = 'Storage fail'
-    throw e
-  }
+  await announcementModel.findByIdAndUpdate(id, doc)
   return doc
 }
 
 async function add(data) {
-  try {
-    return await data.save()
-  } catch (e) {
-    e.statusCode = 507
-    e.message = 'Storage fail'
-    throw e
-  }
+  return await data.save()
+}
+
+async function remove(id) {
+  await announcementModel.findByIdAndRemove(id)
 }
 
 function filter(data) {
@@ -51,8 +42,19 @@ export default {
     ctx.body = await add(data)
   },
 
-  async handleGetAnnouncement(ctx) {
+  async handleRemoveAnnouncement(ctx) {
+    const id = ctx.params.id
+    await findById(id)
+    await remove(id)
+    ctx.body = null
+  },
+
+  async handleGetAnnouncementById(ctx) {
     ctx.body = await findById(ctx.params.id)
+  },
+
+  async handleGetAnnouncementsByUser(ctx) {
+    ctx.body = await findByUser(ctx.session.username)
   },
 
   async handleUpdateAnnouncement(ctx) {

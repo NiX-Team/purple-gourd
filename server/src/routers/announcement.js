@@ -7,4 +7,5 @@ const router = new Router()
 export default router
   .post('/', body(), announcementController.handleAddAnnouncement)
   .put('/:id', body(), announcementController.handleUpdateAnnouncement)
-  .get('/:id', announcementController.handleGetAnnouncement)
+  .get('/:id', announcementController.handleGetAnnouncementById)
+  .delete('/:id', announcementController.handleRemoveAnnouncement)

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "checkJs": true,
     "module": "commonjs",
     "allowSyntheticDefaultImports": true,
     "jsx": "react", // Must have, otherwise unable to parse jsx file

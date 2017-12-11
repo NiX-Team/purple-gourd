@@ -1,4 +1,4 @@
-import announcementsModel from '~/models/announcementsModel'
+import announcementsModel from '~/models/announcementModel'
 import { error } from '~/middlewares/error'
 
 async function findById(id) {

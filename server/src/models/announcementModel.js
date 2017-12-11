@@ -1,7 +1,7 @@
 import mongoose from './mongoose'
 import { Schema } from 'mongoose'
 
-const announcementsSchema = new Schema(
+const announcementSchema = new Schema(
   {
     title: { type: String },
     creator: { type: String },
@@ -14,4 +14,4 @@ const announcementsSchema = new Schema(
   { timestamps: true },
 )
 
-export default mongoose.model('announcement', announcementsSchema)
+export default mongoose.model('announcement', announcementSchema)

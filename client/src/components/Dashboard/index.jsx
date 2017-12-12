@@ -6,8 +6,8 @@ import { observable } from 'mobx'
 import Announcement from '@/models/Announcement'
 
 @observer
-export default class Dashboard extends React.Component {
-  @observable announcements
+class Dashboard extends React.Component {
+  @observable announcements = []
   @observable loading = true
 
   async componentDidMount() {
@@ -41,3 +41,5 @@ export default class Dashboard extends React.Component {
     )
   }
 }
+
+export default Dashboard

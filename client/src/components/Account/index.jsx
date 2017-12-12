@@ -1,9 +1,17 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { Affix, Dropdown, Avatar, Menu, Icon } from 'antd'
 
-export default function Account() {
+function Account() {
   const menu = (
     <Menu>
+      <Menu.Item>
+        <Link to="dashboard">
+          <Icon type="dashboard" />
+          公告栏
+        </Link>
+      </Menu.Item>
+      <Menu.Divider />
       <Menu.Item>
         <Icon type="logout" />
         登出
@@ -27,3 +35,5 @@ export default function Account() {
     </Affix>
   )
 }
+
+export default Account

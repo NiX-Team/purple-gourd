@@ -1,8 +1,8 @@
-import usersModel from '~/models/userModel'
+import userModel from '~/models/userModel'
 import { error } from '~/middlewares/error'
 
 async function findOneAndCheck(username, uid) {
-  const result = await usersModel.findOne({ username })
+  const result = await userModel.findOne({ username })
   if (!result) throw error(404, 'No such user')
   return {
     uid: result._id,
@@ -19,7 +19,7 @@ export default {
 
     if (
       formData &&
-      (user = await usersModel.findOne({ username: formData.username })) &&
+      (user = await userModel.findOne({ username: formData.username })) &&
       formData.username === user.username &&
       formData.password === user.password
     ) {
@@ -29,7 +29,7 @@ export default {
   },
 
   async handleGetUserInfo(ctx) {
-    ctx.body = await usersModel.findOne(
+    ctx.body = await userModel.findOne(
       { username: ctx.session.username },
       ctx.query,
     )
@@ -42,10 +42,10 @@ export default {
         ctx.session.uid,
       )
     if (isFollow) throw error(204) // TODO: Not sure whether to return 204
-    await usersModel.findByIdAndUpdate(ctx.session.uid, {
+    await userModel.findByIdAndUpdate(ctx.session.uid, {
       $push: { following: { uid } },
     })
-    await usersModel.findByIdAndUpdate(uid, {
+    await userModel.findByIdAndUpdate(uid, {
       $push: { followers: { uid: ctx.session.uid } },
     })
     ctx.body = { username: jsonData.username }
@@ -58,11 +58,10 @@ export default {
         ctx.session.uid,
       )
     if (isFollow) {
-      console.log('wow')
-      await usersModel.findByIdAndUpdate(ctx.session.uid, {
+      await userModel.findByIdAndUpdate(ctx.session.uid, {
         $pull: { following: { uid } },
       })
-      await usersModel.findByIdAndUpdate(uid, {
+      await userModel.findByIdAndUpdate(uid, {
         $pull: { followers: { uid: ctx.session.uid } },
       })
     }

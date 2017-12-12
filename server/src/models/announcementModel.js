@@ -3,11 +3,11 @@ import { Schema } from 'mongoose'
 
 const announcementSchema = new Schema(
   {
-    title: { type: String },
-    creator: { type: String },
-    beginTime: { type: Date },
-    endTime: { type: Date },
-    uploadType: { type: String },
+    title: { type: String, required: true },
+    creator: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+    beginTime: { type: Date, required: true },
+    endTime: { type: Date, required: true },
+    uploadType: { type: String, required: true },
     description: { type: String },
     formField: [new Schema({ fieldName: { type: String } }, { _id: false })],
   },

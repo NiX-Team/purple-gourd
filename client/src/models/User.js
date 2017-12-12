@@ -11,7 +11,7 @@ const User = new class User {
   }
 
   async getUsername() {
-    return await request('/user')
+    return await request('/users')
   }
 }()
 

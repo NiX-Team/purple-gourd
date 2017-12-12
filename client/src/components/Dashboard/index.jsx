@@ -1,24 +1,42 @@
 import React from 'react'
-import Upload from '@/components/Upload'
-import AnnouncementForm from '@/components/Announcement/Form'
-import User from '@/models/User'
+import { Link } from 'react-router-dom'
+import { List, Card } from 'antd'
+import { observer } from 'mobx-react'
+import { observable } from 'mobx'
+import Announcement from '@/models/Announcement'
 
+@observer
 export default class Dashboard extends React.Component {
-  state = {}
+  @observable announcements
+  @observable loading = true
 
   async componentDidMount() {
-    let { data } = await User.getUsername()
-    this.setState({ username: data.username })
+    const { data } = await Announcement.getFollowingAnnouncements()
+    this.announcements = data
+    this.loading = false
   }
 
   render() {
-    const { username } = this.state
     return (
       <div>
-        <h2>Dashboard</h2>
-        <p>Hello {username} !</p>
-        <Upload />
-        <AnnouncementForm />
+        <Card title="公告栏" bordered={false}>
+          <List
+            loading={this.loading}
+            itemLayout="horizontal"
+            dataSource={this.announcements}
+            renderItem={item => (
+              <List.Item>
+                <List.Item.Meta
+                  title={<Link to={item._id}>{item.title}</Link>}
+                  description={
+                    item.description ? item.description : '无描述...'
+                  }
+                />
+                <span>发布于{item.createdAt}</span>
+              </List.Item>
+            )}
+          />
+        </Card>
       </div>
     )
   }

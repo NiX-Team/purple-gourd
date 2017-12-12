@@ -1,27 +1,21 @@
 import React from 'react'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { observer } from 'mobx-react'
 import PrivateRoute from '@/components/Auth/PrivateRoute'
 import Login from '@/components/Login'
 import Dashboard from '@/components/Dashboard'
 import Interceptor from '@/components/Auth/Interceptor'
+import Account from '@/components/Account'
+import User from '@/models/User'
 
+@observer
 class App extends React.Component {
   render() {
     return (
       <Router>
         <div>
+          {User.isAuthenticated ? <Account /> : null}
           <Interceptor />
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-            <li>
-              <Link to="/dashboard">Dashboard</Link>
-            </li>
-          </ul>
           <Route exact path="/" component={Home} />
           <Route path="/login" component={Login} />
           <PrivateRoute path="/dashboard" component={Dashboard} />

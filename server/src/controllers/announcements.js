@@ -2,9 +2,9 @@ import announcementModel from '~/models/announcementModel'
 import userModel from '~/models/userModel'
 import { error } from '~/middlewares/error'
 
-async function findById(id) {
+async function findById(id, opt = {}) {
   let result
-  result = await announcementModel.findById(id)
+  result = await announcementModel.findById(id, opt)
   if (!result) throw error(404, 'No such announcement')
   return result
 }
@@ -27,7 +27,7 @@ async function remove(id) {
 }
 
 function filter(data) {
-  ;['_id', 'creator'].forEach(item => {
+  ;['_id', 'creator', 'forms', 'createdAt', 'updatedAt'].forEach(item => {
     delete data[item]
   })
   return data
@@ -43,6 +43,35 @@ export default {
     ctx.body = await add(data)
   },
 
+  async handleAddAnnouncementForm(ctx) {
+    const jsonData = ctx.request.body,
+      id = ctx.params.id,
+      result = await findById(id)
+    let formData = {}
+    result.formField.forEach(({ fieldName }) => {
+      if (jsonData[fieldName]) formData[fieldName] = jsonData[fieldName]
+    })
+    if (
+      result.forms.find(({ submitter }) => submitter.equals(ctx.session.uid))
+    ) {
+      await announcementModel.findOneAndUpdate(
+        { _id: id, 'forms.submitter': ctx.session.uid },
+        {
+          $set: {
+            'forms.$.data': formData,
+          },
+        },
+      )
+    } else {
+      await announcementModel.findByIdAndUpdate(id, {
+        $push: {
+          forms: { data: formData, submitter: ctx.session.uid },
+        },
+      })
+    }
+    ctx.body = formData
+  },
+
   async handleRemoveAnnouncement(ctx) {
     const id = ctx.params.id
     await findById(id)
@@ -51,16 +80,22 @@ export default {
   },
 
   async handleGetAnnouncementById(ctx) {
-    ctx.body = await findById(ctx.params.id)
+    ctx.body = await findById(ctx.params.id, {
+      forms: { $elemMatch: { submitter: ctx.session.uid } },
+    })
   },
 
-  async handleGetAnnouncements(ctx) {
+  async handleGetAnnouncementsFollowing(ctx) {
     const result = await userModel.findById(ctx.session.uid),
       nowTime = new Date(Date.now())
-    ctx.body = await announcementModel.find({
-      creator: { $in: result.following.map(item => item.uid) },
-      endTime: { $gte: nowTime },
-    })
+    ctx.body = await announcementModel.find(
+      {
+        creator: { $in: result.following.map(item => item.uid) },
+        beginTime: { $lte: nowTime },
+        endTime: { $gte: nowTime },
+      },
+      { forms: { $elemMatch: { submitter: ctx.session.uid } } },
+    )
   },
 
   async handleGetAnnouncementsByUser(ctx) {

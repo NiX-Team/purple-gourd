@@ -10,6 +10,19 @@ const announcementSchema = new Schema(
     uploadType: { type: String, required: true },
     description: { type: String },
     formField: [new Schema({ fieldName: { type: String } }, { _id: false })],
+    forms: [
+      new Schema(
+        {
+          data: Schema.Types.Mixed,
+          submitter: {
+            type: Schema.Types.ObjectId,
+            ref: 'user',
+            required: true,
+          },
+        },
+        { timestamps: true, _id: false },
+      ),
+    ],
   },
   { timestamps: true },
 )

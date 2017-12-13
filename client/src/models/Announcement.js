@@ -5,6 +5,10 @@ export default new class Announcement {
     return await request('/announcements')
   }
 
+  async getCreatedAnnouncements() {
+    return await request('/users/announcements')
+  }
+
   async getAnnouncementById(id) {
     return await request(`/announcements/${id}`)
   }

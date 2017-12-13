@@ -20,6 +20,7 @@ class App extends React.Component {
           <Switch>
             <Route exact path="/" component={Home} />
             <Route path="/login" component={Login} />
+            <PrivateRoute path="/dashboard/:tab" component={Dashboard} />
             <PrivateRoute path="/dashboard" component={Dashboard} />
             <Route path="/:id" component={AnnouncementCard} />
           </Switch>

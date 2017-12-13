@@ -27,16 +27,16 @@ function Account() {
   )
   return (
     <Affix
-      offsetTop={8}
+      offsetTop={16}
       style={{
         position: 'absolute',
         zIndex: 1,
         right: 0,
-        marginTop: '8px',
-        marginRight: '8px',
+        marginTop: '16px',
+        marginRight: '16px',
       }}
     >
-      <Dropdown overlay={menu} trigger={['click', 'hover']}>
+      <Dropdown overlay={menu} trigger={['click']}>
         <Avatar size="large" icon="user" />
       </Dropdown>
     </Affix>

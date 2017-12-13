@@ -80,21 +80,26 @@ export default {
   },
 
   async handleGetAnnouncementById(ctx) {
-    ctx.body = await findById(ctx.params.id, {
-      forms: { $elemMatch: { submitter: ctx.session.uid } },
-    })
+    ctx.body = [await findById(ctx.params.id)].filter(
+      item =>
+        (item.forms = item.forms.filter(item =>
+          item.submitter.equals(ctx.session.uid),
+        )),
+    )[0]
   },
 
   async handleGetAnnouncementsFollowing(ctx) {
     const result = await userModel.findById(ctx.session.uid),
       nowTime = new Date(Date.now())
-    ctx.body = await announcementModel.find(
-      {
-        creator: { $in: result.following.map(item => item.uid) },
-        beginTime: { $lte: nowTime },
-        endTime: { $gte: nowTime },
-      },
-      { forms: { $elemMatch: { submitter: ctx.session.uid } } },
+    ctx.body = (await announcementModel.find({
+      creator: { $in: result.following.map(item => item.uid) },
+      beginTime: { $lte: nowTime },
+      endTime: { $gte: nowTime },
+    })).filter(
+      item =>
+        (item.forms = item.forms.filter(item =>
+          item.submitter.equals(ctx.session.uid),
+        )),
     )
   },
 

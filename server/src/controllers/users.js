@@ -28,6 +28,11 @@ export default {
     } else ctx.throw(401, 'Bad credentials')
   },
 
+  async handleLogout(ctx, next) {
+    ctx.session = null
+    await next()
+  },
+
   async handleGetUserInfo(ctx) {
     ctx.body = await userModel.findOne(
       { username: ctx.session.username },

@@ -6,15 +6,22 @@ function Account() {
   const menu = (
     <Menu>
       <Menu.Item>
-        <Link to="dashboard">
+        <Link to="/dashboard">
           <Icon type="dashboard" />
           公告栏
         </Link>
       </Menu.Item>
       <Menu.Divider />
       <Menu.Item>
-        <Icon type="logout" />
-        登出
+        <Link
+          to={{
+            pathname: '/login',
+            isLogout: true,
+          }}
+        >
+          <Icon type="logout" />
+          登出
+        </Link>
       </Menu.Item>
     </Menu>
   )

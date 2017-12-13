@@ -20,7 +20,6 @@ class Interceptor extends React.Component {
 
       response: function(response) {
         // Modify the response object
-        // TODO: MobX will be better, or convert auth to a component ??
         switch (response.status) {
           case 401:
             User.isAuthenticated = false
@@ -29,6 +28,7 @@ class Interceptor extends React.Component {
           default:
             return response
         }
+        return response
       },
 
       responseError: function(error) {

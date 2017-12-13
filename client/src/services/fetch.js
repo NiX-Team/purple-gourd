@@ -11,6 +11,6 @@ export async function request(
   },
 ) {
   const response = await fetch(url, option),
-    json = await response.json()
+    json = response.status === 204 ? null : await response.json()
   return { response, data: json }
 }

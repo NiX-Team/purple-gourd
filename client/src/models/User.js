@@ -10,6 +10,11 @@ const User = new class User {
     return response
   }
 
+  async logout() {
+    this.isAuthenticated = false
+    return await request('/logout', 'POST')
+  }
+
   async getUsername() {
     return await request('/users')
   }

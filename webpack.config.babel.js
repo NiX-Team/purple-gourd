@@ -70,6 +70,7 @@ const clientConfig = {
     extensions: ['.js', '.json', '.jsx'],
     alias: {
       '@': path.resolve(CLIENT_PATH, './src'),
+      '~': path.resolve(CLIENT_PATH, './'),
     },
   },
   module: {
@@ -112,6 +113,7 @@ const clientConfig = {
                   importLoaders: 1,
                   modules: true,
                   sourceMap: true,
+                  camelCase: true,
                 },
               },
             ],

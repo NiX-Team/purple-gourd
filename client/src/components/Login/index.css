@@ -1,0 +1,30 @@
+.container {
+  min-height: 100%;
+  width: 100%;
+  padding: 110px 0 144px 0;
+}
+
+.title {
+  text-align: center;
+}
+
+.description {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.45);
+  margin-top: 12px;
+  margin-bottom: 40px;
+}
+
+.login-form {
+  width: 384px;
+  margin: 0 auto;
+}
+
+.submit {
+  width: 100%;
+}
+
+.forgot,
+.register {
+  float: right;
+}

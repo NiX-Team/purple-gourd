@@ -1,7 +1,11 @@
 import React from 'react'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from 'react-router-dom'
 import { observer } from 'mobx-react'
-import PrivateRoute from '@/components/Auth/PrivateRoute'
 import Login from '@/components/Login'
 import Dashboard from '@/components/Dashboard'
 import Interceptor from '@/components/Auth/Interceptor'
@@ -20,8 +24,11 @@ class App extends React.Component {
           <Switch>
             <Route exact path="/" component={Home} />
             <Route path="/login" component={Login} />
-            <PrivateRoute path="/dashboard/:tab" component={Dashboard} />
-            <PrivateRoute path="/dashboard" component={Dashboard} />
+            <Route path="/dashboard/:tab" component={Dashboard} />
+            <Route
+              path="/dashboard"
+              render={() => <Redirect to="/dashboard/following" />}
+            />
             <Route path="/:id" component={AnnouncementCard} />
           </Switch>
         </div>

@@ -23,7 +23,10 @@ class Interceptor extends React.Component {
         switch (response.status) {
           case 401:
             User.isAuthenticated = false
-            self.props.history.push('/login')
+            self.props.history.push({
+              pathname: '/login',
+              from: self.props.history.location.pathname,
+            })
             break
           default:
             return response

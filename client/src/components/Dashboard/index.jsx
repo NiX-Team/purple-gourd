@@ -1,5 +1,4 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import { List, Card, Tabs } from 'antd'
 import { observer } from 'mobx-react'
 import { observable, intercept } from 'mobx'
@@ -16,19 +15,13 @@ class Dashboard extends React.Component {
 
   componentWillMount() {
     intercept(this, 'key', change => {
-      if (change.newValue) this.handleTagChange(change.newValue)
+      this.handleTagChange(change.newValue)
       return change
     })
-    if (!this.props.match.params.tab) this.key = 'following'
   }
 
   componentDidMount() {
     this.key = this.props.match.params.tab
-  }
-
-  componentWillReceiveProps(nextProps, nextContext) {
-    if (nextProps.match.params.tab !== this.props.match.params.tab)
-      this.key = nextProps.match.params.tab || 'following'
   }
 
   handleTagChange = key => {
@@ -49,10 +42,7 @@ class Dashboard extends React.Component {
       default:
         return
     }
-    console.log(this.props.history)
-    this.props.history.push({
-      pathname: `/${this.props.history.location.pathname.split('/')[1]}/${key}`,
-    })
+    this.props.history.push(key)
   }
 
   handleCardClick = item => e => {
@@ -64,65 +54,59 @@ class Dashboard extends React.Component {
 
   render() {
     return (
-      <div>
-        <Card bordered={false}>
-          <Card.Meta title={<h1>公告</h1>} />
-          <Tabs activeKey={this.key} onChange={this.handleTagChange}>
-            <TabPane tab="我关注的" key="following">
-              <List
-                loading={this.loading}
-                itemLayout="horizontal"
-                dataSource={this.followingAnnouncements}
-                renderItem={item => (
-                  <Card
-                    hoverable={true}
-                    style={{ marginTop: '12px' }}
-                    onClick={this.handleCardClick(item._id)}
-                  >
-                    <List.Item>
-                      <List.Item.Meta
-                        title={
-                          <Link to={{ pathname: `/${item._id}` }}>
-                            {item.title}
-                          </Link>
-                        }
-                        description={
-                          item.description ? item.description : '无描述...'
-                        }
-                      />
-                      <span>发布于{item.createdAt}</span>
-                    </List.Item>
-                  </Card>
-                )}
-              />
-            </TabPane>
-            <TabPane tab="我发布的" key="created">
-              <List
-                loading={this.loading}
-                itemLayout="horizontal"
-                dataSource={this.createdAnnouncements}
-                renderItem={item => (
-                  <Card
-                    hoverable={true}
-                    style={{ marginTop: '12px' }}
-                    onClick={this.handleCardClick(item._id)}
-                  >
-                    <List.Item>
-                      <List.Item.Meta
-                        title={<Link to={item._id}>{item.title}</Link>}
-                        description={
-                          item.description ? item.description : '无描述...'
-                        }
-                      />
-                      <span>发布于{item.createdAt}</span>
-                    </List.Item>
-                  </Card>
-                )}
-              />
-            </TabPane>
-          </Tabs>
-        </Card>
-      </div>
+      <Card bordered={false}>
+        <Card.Meta title={<h1>公告</h1>} />
+        <Tabs activeKey={this.key} onChange={key => (this.key = key)}>
+          <TabPane tab="我关注的" key="following">
+            <List
+              loading={this.loading}
+              itemLayout="horizontal"
+              dataSource={this.followingAnnouncements}
+              renderItem={item => (
+                <Card
+                  hoverable={true}
+                  style={{ marginTop: '12px' }}
+                  onClick={this.handleCardClick(item._id)}
+                >
+                  <List.Item>
+                    <List.Item.Meta
+                      title={item.title}
+                      description={
+                        item.description ? item.description : '无描述...'
+                      }
+                    />
+                    <span>发布于{item.createdAt}</span>
+                  </List.Item>
+                </Card>
+              )}
+            />
+          </TabPane>
+          <TabPane tab="我发布的" key="created">
+            <List
+              loading={this.loading}
+              itemLayout="horizontal"
+              dataSource={this.createdAnnouncements}
+              renderItem={item => (
+                <Card
+                  hoverable={true}
+                  style={{ marginTop: '12px' }}
+                  onClick={this.handleCardClick(item._id)}
+                >
+                  <List.Item>
+                    <List.Item.Meta
+                      title={item.title}
+                      description={
+                        item.description ? item.description : '无描述...'
+                      }
+                    />
+                    <span>发布于{item.createdAt}</span>
+                  </List.Item>
+                </Card>
+              )}
+            />
+          </TabPane>
+        </Tabs>
+      </Card>
     )
   }
 }

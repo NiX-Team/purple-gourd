@@ -1,7 +1,7 @@
 import React from 'react'
-import { List, Card, Tabs } from 'antd'
 import { observer } from 'mobx-react'
 import { observable, intercept } from 'mobx'
+import { List, Card, Tabs } from 'antd'
 import Announcement from '@/models/Announcement'
 
 const { TabPane } = Tabs
@@ -56,7 +56,11 @@ class Dashboard extends React.Component {
     return (
       <Card bordered={false}>
         <Card.Meta title={<h1>公告</h1>} />
-        <Tabs activeKey={this.key} onChange={key => (this.key = key)}>
+        <Tabs
+          activeKey={this.key}
+          size="large"
+          onChange={key => (this.key = key)}
+        >
           <TabPane tab="我关注的" key="following">
             <List
               loading={this.loading}

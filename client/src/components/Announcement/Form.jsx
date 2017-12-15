@@ -1,22 +1,22 @@
 import React from 'react'
 import { Form, DatePicker, Button, Select, Input, message, Icon } from 'antd'
 import moment from 'moment'
+import Announcement from '@/models/Announcement'
+
 const Option = Select.Option
 const FormItem = Form.Item
 const RangePicker = DatePicker.RangePicker
 
 let uuid = 0
+
 class AnnouncementForm extends React.Component {
   remove = k => {
     const { form } = this.props
-    // can use data-binding to get
     const keys = form.getFieldValue('keys')
-    // We need at least one passenger
     if (keys.length === 1) {
       return
     }
 
-    // can use data-binding to set
     form.setFieldsValue({
       keys: keys.filter(key => key !== k),
     })
@@ -25,27 +25,15 @@ class AnnouncementForm extends React.Component {
   add = () => {
     uuid++
     const { form } = this.props
-    // can use data-binding to get
     const keys = form.getFieldValue('keys')
     const nextKeys = keys.concat(uuid)
-    // can use data-binding to set
-    // important! notify form to detect changes
     form.setFieldsValue({
       keys: nextKeys,
     })
   }
 
-  postForm = async data => {
-    let response
-    try {
-      response = await fetch('/announcement', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      })
-    } catch (e) {
-      throw e
-    }
-    return response.ok
+  componentDidMount() {
+    this.add()
   }
 
   handleSubmit = e => {
@@ -56,13 +44,11 @@ class AnnouncementForm extends React.Component {
 
       if (fieldsValue.uploadType === 'form') {
         fieldsValue.formField = []
-        for (const i in fieldsValue)
-          if (i.substr(0, 5) === 'names') {
-            fieldsValue.formField.push({
-              fieldName: fieldsValue[i],
-            })
-            delete fieldsValue[i]
-          }
+        fieldsValue.keys.forEach(i => {
+          fieldsValue.formField.push({ fieldName: fieldsValue[`names-${i}`] })
+          delete fieldsValue[`names-${i}`]
+        })
+        delete fieldsValue.keys
       }
       const rangeTimeValue = fieldsValue['rangeTime']
       const values = {
@@ -72,14 +58,10 @@ class AnnouncementForm extends React.Component {
       }
       delete values['rangeTime']
 
-      this.postForm(values)
-        .then(ok => {
-          if (ok) message.success('发布成功！')
-          else message.error('发布失败！')
-        })
-        .catch(e => {
-          message.error(`网络错误，请检查网络！`)
-        })
+      Announcement.postAnnouncement(values).then(({ response }) => {
+        if (response.ok) message.success('发布成功！')
+        else message.error('发布失败！')
+      })
     })
   }
 
@@ -104,7 +86,7 @@ class AnnouncementForm extends React.Component {
       return (
         <FormItem
           {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
-          label={index === 0 ? 'Passengers' : ''}
+          label={index === 0 ? '字段' : ''}
           required={false}
           key={k}
         >
@@ -114,12 +96,12 @@ class AnnouncementForm extends React.Component {
               {
                 required: true,
                 whitespace: true,
-                message: "Please input passenger's name or delete this field.",
+                message: '请输入字段名或删除该字段',
               },
             ],
           })(
             <Input
-              placeholder="passenger name"
+              placeholder="字段名"
               style={{ width: '60%', marginRight: 8 }}
             />,
           )}
@@ -165,7 +147,7 @@ class AnnouncementForm extends React.Component {
           {formItems}
           <FormItem {...formItemLayoutWithOutLabel}>
             <Button type="dashed" onClick={this.add} style={{ width: '60%' }}>
-              <Icon type="plus" /> Add field
+              <Icon type="plus" /> 添加字段
             </Button>
           </FormItem>
           <FormItem>

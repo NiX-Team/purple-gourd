@@ -10,7 +10,11 @@ import Login from '@/components/Login'
 import Dashboard from '@/components/Dashboard'
 import Interceptor from '@/components/Auth/Interceptor'
 import Account from '@/components/Account'
-import AnnouncementCard from '@/components/Announcement/Card'
+import {
+  AnnouncementCard,
+  AnnouncementForm,
+  AnnouncementPost,
+} from '@/components/Announcement'
 import User from '@/models/User'
 
 @observer
@@ -18,12 +22,22 @@ class App extends React.Component {
   render() {
     return (
       <Router>
-        <div>
-          {User.isAuthenticated ? <Account /> : null}
+        <React.Fragment>
+          {User.isAuthenticated ? (
+            <React.Fragment>
+              <Account />
+              <AnnouncementPost />
+            </React.Fragment>
+          ) : null}
           <Interceptor />
           <Switch>
-            <Route exact path="/" component={Home} />
+            <Route
+              exact
+              path="/"
+              render={() => <Redirect to="/dashboard/following" />}
+            />
             <Route path="/login" component={Login} />
+            <Route path="/post" component={AnnouncementForm} />
             <Route path="/dashboard/:tab" component={Dashboard} />
             <Route
               path="/dashboard"
@@ -31,16 +45,10 @@ class App extends React.Component {
             />
             <Route path="/:id" component={AnnouncementCard} />
           </Switch>
-        </div>
+        </React.Fragment>
       </Router>
     )
   }
 }
-
-const Home = () => (
-  <div>
-    <h2>Home</h2>
-  </div>
-)
 
 export default App

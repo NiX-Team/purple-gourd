@@ -1,0 +1,8 @@
+.add {
+  background-color: red;
+  transition: 0.5s;
+}
+
+.add:hover {
+  transform: rotate(0.25turn);
+}

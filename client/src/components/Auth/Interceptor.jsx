@@ -1,6 +1,7 @@
 import React from 'react'
 import fetchIntercept from 'fetch-intercept'
 import { withRouter } from 'react-router'
+import { message } from 'antd'
 import User from '@/models/User'
 
 class Interceptor extends React.Component {
@@ -36,6 +37,7 @@ class Interceptor extends React.Component {
 
       responseError: function(error) {
         // Handle an fetch error
+        message.error('网络错误，请检查网络')
         return Promise.reject(error)
       },
     })

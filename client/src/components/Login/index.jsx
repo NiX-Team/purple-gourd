@@ -12,17 +12,13 @@ class LoginForm extends React.Component {
     e.preventDefault()
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        User.login(values)
-          .then(res => {
-            const { response } = res
-            if (response.ok) {
-              message.success('登录成功！')
-              this.props.history.push(this.props.location.from || '/dashboard')
-            } else message.error('登录失败，用户名或密码错误！')
-          })
-          .catch(error => {
-            message.error(`网络错误，请检查网络！`)
-          })
+        User.login(values).then(res => {
+          const { response } = res
+          if (response.ok) {
+            message.success('登录成功！')
+            this.props.history.push(this.props.location.from || '/dashboard')
+          } else message.error('登录失败，用户名或密码错误！')
+        })
       }
     })
   }

@@ -12,4 +12,8 @@ export default new class Announcement {
   async getAnnouncementById(id) {
     return await request(`/announcements/${id}`)
   }
+
+  async postAnnouncement(data) {
+    return await request('/announcements', 'POST', data)
+  }
 }()

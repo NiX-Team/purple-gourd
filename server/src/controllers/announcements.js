@@ -1,3 +1,6 @@
+import stream from 'stream'
+import crypto from 'crypto'
+import mongoose from '~/models/mongoose'
 import announcementModel from '~/models/announcementModel'
 import userModel from '~/models/userModel'
 import { error } from '~/middlewares/error'
@@ -114,5 +117,64 @@ export default {
     if (!result.creator.equals(ctx.session.uid))
       ctx.throw(403, 'Only creator can change this')
     ctx.body = await findByIdAndUpdate(id, Object.assign(result, jsonData))
+  },
+
+  async handleUploadFile(ctx) {
+    const id = ctx.params.id
+    const result = await findById(id)
+    const hash = crypto.createHash('md5')
+    const file = ctx.req.file
+    hash.update(file.buffer)
+    const md5 = hash.digest('hex')
+
+    const foundFile = await new Promise((resolve, reject) => {
+      mongoose.gfs.findOne({ md5 }, (e, f) => (e ? reject(e) : resolve(f)))
+    })
+
+    let fileId
+    if (foundFile) {
+      fileId = foundFile._id
+    } else {
+      const writestream = mongoose.gfs.createWriteStream({
+        filename: `${file.originalname}`,
+      })
+      fileId = writestream.id
+      const bufferStream = new stream.PassThrough()
+      bufferStream.end(file.buffer)
+      bufferStream.pipe(writestream)
+    }
+
+    const targetList = result.files.find(({ submitter }) =>
+      submitter.equals(ctx.session.uid),
+    )
+
+    if (targetList) {
+      if (!targetList.list.find(({ fid }) => fid.equals(fileId))) {
+        await announcementModel.findOneAndUpdate(
+          {
+            _id: id,
+            'files.submitter': ctx.session.uid,
+          },
+          {
+            $push: {
+              'files.$.list': { fid: fileId, uploadTime: new Date(Date.now()) },
+            },
+          },
+        )
+      }
+    } else {
+      await announcementModel.findByIdAndUpdate(id, {
+        $push: {
+          files: {
+            list: { fid: fileId, uploadTime: new Date(Date.now()) },
+            submitter: ctx.session.uid,
+          },
+        },
+      })
+    }
+
+    ctx.body = (await findById(id)).files.filter(({ submitter }) =>
+      submitter.equals(ctx.session.uid),
+    )[0]
   },
 }

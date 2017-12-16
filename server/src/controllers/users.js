@@ -31,6 +31,7 @@ export default {
   async handleLogout(ctx, next) {
     ctx.session = null
     await next()
+    ctx.body = { message: 'Logout success' }
   },
 
   async handleGetUserInfo(ctx) {

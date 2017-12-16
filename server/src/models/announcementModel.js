@@ -13,7 +13,32 @@ const announcementSchema = new Schema(
     forms: [
       new Schema(
         {
-          data: Schema.Types.Mixed,
+          data: { type: Schema.Types.Mixed },
+          submitter: {
+            type: Schema.Types.ObjectId,
+            ref: 'user',
+            required: true,
+          },
+        },
+        { timestamps: true, _id: false },
+      ),
+    ],
+    files: [
+      new Schema(
+        {
+          list: [
+            new Schema(
+              {
+                fid: {
+                  type: Schema.Types.ObjectId,
+                  ref: 'fs.files',
+                  required: true,
+                },
+                uploadTime: { type: Date, required: true },
+              },
+              { _id: false },
+            ),
+          ],
           submitter: {
             type: Schema.Types.ObjectId,
             ref: 'user',

@@ -42,7 +42,7 @@ class Dashboard extends React.Component {
       default:
         return
     }
-    this.props.history.push(key)
+    this.props.history.replace(key)
   }
 
   handleCardClick = item => e => {

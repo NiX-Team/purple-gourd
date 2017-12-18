@@ -3,7 +3,6 @@ import Koa from 'koa'
 import error from '~/middlewares/error'
 import routers from '~/routers'
 import session from '~/middlewares/session'
-import '~/models/mongoose'
 import devServer, { historyApiFallBack } from '~/middlewares/devServer'
 
 const app = new Koa()

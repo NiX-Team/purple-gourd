@@ -31,7 +31,7 @@ const announcementSchema = new Schema(
               {
                 fid: {
                   type: Schema.Types.ObjectId,
-                  ref: 'fs.files',
+                  ref: 'gfs',
                   required: true,
                 },
                 uploadTime: { type: Date, required: true },
@@ -52,4 +52,5 @@ const announcementSchema = new Schema(
   { timestamps: true },
 )
 
+mongoose.model('gfs', new Schema({}, { strict: false }), 'fs.files')
 export default mongoose.model('announcement', announcementSchema)

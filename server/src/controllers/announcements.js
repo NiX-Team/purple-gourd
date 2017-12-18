@@ -7,7 +7,7 @@ import { error } from '~/middlewares/error'
 
 async function findById(id, opt = {}) {
   let result
-  result = await announcementModel.findById(id, opt)
+  result = await announcementModel.findById(id, opt).populate('files.list.fid')
   if (!result) throw error(404, 'No such announcement')
   return result
 }
@@ -126,6 +126,7 @@ export default {
     const file = ctx.req.file
     hash.update(file.buffer)
     const md5 = hash.digest('hex')
+    let writestream = null
 
     const foundFile = await new Promise((resolve, reject) => {
       mongoose.gfs.findOne({ md5 }, (e, f) => (e ? reject(e) : resolve(f)))
@@ -135,7 +136,7 @@ export default {
     if (foundFile) {
       fileId = foundFile._id
     } else {
-      const writestream = mongoose.gfs.createWriteStream({
+      writestream = mongoose.gfs.createWriteStream({
         filename: `${file.originalname}`,
       })
       fileId = writestream.id
@@ -173,7 +174,16 @@ export default {
       })
     }
 
-    ctx.body = (await findById(id)).files.filter(({ submitter }) =>
+    // TODO: Can be optimized
+    await new Promise((resolve, reject) => {
+      if (writestream) {
+        writestream.on('finish', file => resolve(file))
+        writestream.on('error', e => reject(e))
+      } else resolve()
+    })
+    ctx.body = (await announcementModel
+      .findById(id)
+      .populate('files.list.fid')).files.filter(({ submitter }) =>
       submitter.equals(ctx.session.uid),
     )[0]
   },

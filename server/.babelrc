@@ -18,7 +18,8 @@
           "~": "./server/src"
         }
       }
-    ]
+    ],
+    "transform-decorators-legacy"
   ],
   "env": {
     "development": {},

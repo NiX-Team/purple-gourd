@@ -9,14 +9,14 @@ const router = new Router(),
   })
 
 export default router
-  .get('/', announcementsController.handleGetAnnouncementsFollowing)
-  .post('/', body(), announcementsController.handleAddAnnouncement)
-  .put('/:id', body(), announcementsController.handleUpdateAnnouncement)
-  .get('/:id', announcementsController.handleGetAnnouncementById)
-  .post('/:id', body(), announcementsController.handleAddAnnouncementForm)
-  .delete('/:id', announcementsController.handleRemoveAnnouncement)
+  .get('/', announcementsController.getAnnouncementsFollowing)
+  .post('/', body(), announcementsController.addAnnouncement)
+  .put('/:id', body(), announcementsController.updateAnnouncement)
+  .get('/:id', announcementsController.getAnnouncementById)
+  .post('/:id', body(), announcementsController.addAnnouncementForm)
+  .delete('/:id', announcementsController.removeAnnouncement)
   .post(
     '/:id/upload',
     upload.single('file'),
-    announcementsController.handleUploadFile,
+    announcementsController.uploadFile,
   )

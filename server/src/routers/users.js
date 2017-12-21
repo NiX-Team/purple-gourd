@@ -7,7 +7,7 @@ const router = new Router()
 
 export default router
   .get('/', usersController.getUserInfo)
-  .get('/announcements', announcementsController.handleGetAnnouncementsByUser)
+  .get('/announcements', announcementsController.getAnnouncementsByUser)
   .get(
     '/followers',
     usersController.query({ followers: 1 }),

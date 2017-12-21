@@ -14,6 +14,21 @@ export default function filterPlugin(schema, opt) {
     defaultList,
   )
 
+  schema.statics.getFilterObject = obj => {
+    return Object.keys(obj).reduce((cur, key) => {
+      if (blackList[key] === true) {
+        if (Array.isArray(obj[key])) {
+          cur[key] = obj[key].map(item => {
+            return (tree[key].type || tree[key])[0].statics.getFilterObject(
+              item,
+            )
+          })
+        } else cur[key] = obj[key]
+      }
+      return cur
+    }, {})
+  }
+
   schema.statics.getFilterProxy = obj => {
     return new Proxy(obj, {
       get(target, p) {
@@ -35,7 +50,7 @@ export default function filterPlugin(schema, opt) {
     const oldValue = descriptor.value
     descriptor.value = function() {
       const ctx = arguments[0]
-      ctx.request.body = schema.statics.getFilterProxy(ctx.request.body)
+      ctx.request.body = schema.statics.getFilterObject(ctx.request.body)
       return oldValue.apply(null, arguments)
     }
     return descriptor

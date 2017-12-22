@@ -19,7 +19,8 @@
         }
       }
     ],
-    "transform-decorators-legacy"
+    "transform-decorators-legacy",
+    "transform-class-properties"
   ],
   "env": {
     "development": {},

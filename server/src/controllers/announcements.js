@@ -2,28 +2,13 @@ import stream from 'stream'
 import crypto from 'crypto'
 import mongoose from '~/models/mongoose'
 import Announcement, { filter } from '~/models/announcementModel'
-import userModel from '~/models/userModel'
+import User from '~/models/userModel'
 import { error } from '~/middlewares/error'
+import Condition from '~/utils/condition'
 
-async function findById(id, opt = {}) {
-  let result
-  result = await Announcement.findById(id, opt).populate('files.list.fid')
-  if (!result) throw error(404, 'No such announcement')
-  return result
-}
-
-async function findByUser(uid) {
-  return await Announcement.find({ creator: uid })
-}
-
-async function findByIdAndUpdate(id, doc) {
-  await Announcement.findByIdAndUpdate(id, doc)
-  return doc
-}
-
-async function remove(id) {
-  await Announcement.findByIdAndRemove(id)
-}
+const notNull = Condition.notNull(() => {
+  throw error(404, 'No such announcement')
+})
 
 class Announcements {
   @filter
@@ -35,13 +20,14 @@ class Announcements {
   }
 
   async addAnnouncementForm(ctx) {
-    const jsonData = ctx.request.body,
+    const data = ctx.request.body,
       id = ctx.params.id,
-      result = await findById(id)
-    let formData = {}
-    result.formField.forEach(({ fieldName }) => {
-      if (jsonData[fieldName]) formData[fieldName] = jsonData[fieldName]
-    })
+      result = notNull(await Announcement.findById(id)),
+      formData = result.formField.reduce((cur, { fieldName }) => {
+        if (data[fieldName]) cur[fieldName] = data[fieldName]
+        return cur
+      }, {})
+
     if (
       result.forms.find(({ submitter }) => submitter.equals(ctx.session.uid))
     ) {
@@ -64,14 +50,12 @@ class Announcements {
   }
 
   async removeAnnouncement(ctx) {
-    const id = ctx.params.id
-    await findById(id)
-    await remove(id)
+    await Announcement.findByIdAndRemove(ctx.params.id)
     ctx.body = null
   }
 
   async getAnnouncementById(ctx) {
-    ctx.body = [await findById(ctx.params.id)].filter(
+    ctx.body = [notNull(await Announcement.findById(ctx.params.id))].filter(
       item =>
         (item.forms = item.forms.filter(item =>
           item.submitter.equals(ctx.session.uid),
@@ -80,7 +64,7 @@ class Announcements {
   }
 
   async getAnnouncementsFollowing(ctx) {
-    const result = await userModel.findById(ctx.session.uid),
+    const result = await User.findById(ctx.session.uid),
       nowTime = new Date(Date.now())
     ctx.body = (await Announcement.find({
       creator: { $in: result.following.map(item => item.uid) },
@@ -95,22 +79,24 @@ class Announcements {
   }
 
   async getAnnouncementsByUser(ctx) {
-    ctx.body = await findByUser(ctx.session.uid)
+    ctx.body = await Announcement.find({ creator: ctx.session.uid })
   }
 
   @filter
   async updateAnnouncement(ctx) {
-    const jsonData = ctx.request.body,
-      id = ctx.params.id
-    let result = await findById(id)
+    const data = ctx.request.body,
+      id = ctx.params.id,
+      result = notNull(await Announcement.findById(id))
     if (!result.creator.equals(ctx.session.uid))
       ctx.throw(403, 'Only creator can change this')
-    ctx.body = await findByIdAndUpdate(id, Object.assign(result, jsonData))
+    const doc = Object.assign(result, data)
+    await Announcement.findByIdAndUpdate(id, doc)
+    ctx.body = doc
   }
 
   async uploadFile(ctx) {
     const id = ctx.params.id
-    const result = await findById(id)
+    const result = notNull(await Announcement.findById(id))
     const hash = crypto.createHash('md5')
     const file = ctx.req.file
     hash.update(file.buffer)

@@ -55,7 +55,11 @@ class Announcements {
   }
 
   async getAnnouncementById(ctx) {
-    ctx.body = [notNull(await Announcement.findById(ctx.params.id))].filter(
+    ctx.body = [
+      notNull(
+        await Announcement.findById(ctx.params.id).populate('files.list.fid'),
+      ),
+    ].filter(
       item =>
         (item.forms = item.forms.filter(item =>
           item.submitter.equals(ctx.session.uid),
@@ -113,6 +117,7 @@ class Announcements {
     } else {
       writestream = mongoose.gfs.createWriteStream({
         filename: `${file.originalname}`,
+        aliases: 1,
       })
       fileId = writestream.id
       const bufferStream = new stream.PassThrough()
@@ -120,42 +125,29 @@ class Announcements {
       bufferStream.pipe(writestream)
     }
 
-    const targetList = result.files.find(({ submitter }) =>
+    let targetList = result.files.find(({ submitter }) =>
       submitter.equals(ctx.session.uid),
     )
 
-    if (targetList) {
-      if (!targetList.list.find(({ fid }) => fid.equals(fileId))) {
-        await Announcement.findOneAndUpdate(
-          {
-            _id: id,
-            'files.submitter': ctx.session.uid,
-          },
-          {
-            $push: {
-              'files.$.list': { fid: fileId, uploadTime: new Date(Date.now()) },
-            },
-          },
-        )
-      }
-    } else {
-      await Announcement.findByIdAndUpdate(id, {
-        $push: {
-          files: {
-            list: { fid: fileId, uploadTime: new Date(Date.now()) },
-            submitter: ctx.session.uid,
-          },
-        },
+    if (!targetList) {
+      result.files.push({
+        list: [],
+        submitter: ctx.session.uid,
       })
+      targetList = result.files.slice(-1)[0]
+    } else {
     }
+    if (targetList.list.length >= 5) targetList.list[0].remove()
+    targetList.list.push({ fid: fileId, uploadTime: new Date(Date.now()) })
+    await result.save()
 
-    // TODO: Can be optimized
     await new Promise((resolve, reject) => {
       if (writestream) {
         writestream.on('finish', file => resolve(file))
         writestream.on('error', e => reject(e))
       } else resolve()
     })
+
     ctx.body = (await Announcement.findById(id).populate(
       'files.list.fid',
     )).files.filter(({ submitter }) => submitter.equals(ctx.session.uid))[0]

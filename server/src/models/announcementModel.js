@@ -1,4 +1,5 @@
 import mongoose from './mongoose'
+import GridFS from '~/models/gridfsModel'
 import { Schema } from 'mongoose'
 
 const formSchema = new Schema(
@@ -13,17 +14,21 @@ const formSchema = new Schema(
   { timestamps: true, _id: false },
 )
 
-const fileListSchema = new Schema(
-  {
-    fid: {
-      type: Schema.Types.ObjectId,
-      ref: 'gfs',
-      required: true,
-    },
-    uploadTime: { type: Date, required: true },
+const fileListSchema = new Schema({
+  fid: {
+    type: Schema.Types.ObjectId,
+    ref: 'gfs',
+    required: true,
   },
-  { _id: false },
-)
+  uploadTime: { type: Date, required: true },
+})
+
+fileListSchema.pre('remove', function(next) {
+  GridFS.findByIdAndUpdate(this.fid, { $inc: { aliases: -1 } }).exec(e => {
+    if (e) throw e
+    next()
+  })
+})
 
 const fileSchema = new Schema(
   {
@@ -36,6 +41,15 @@ const fileSchema = new Schema(
   },
   { timestamps: true, _id: false },
 )
+
+fileSchema.pre('save', function(next) {
+  GridFS.findByIdAndUpdate(this.list.slice(-1)[0].fid, {
+    $inc: { aliases: 1 },
+  }).exec(e => {
+    if (e) throw e
+    next()
+  })
+})
 
 const formFieldSchema = new Schema(
   { fieldName: { type: String } },
@@ -61,8 +75,6 @@ const announcementSchema = new Schema(
   },
   { timestamps: true },
 )
-
-mongoose.model('gfs', new Schema({}, { strict: false }), 'fs.files')
 
 const Announcement = mongoose.model('announcement', announcementSchema)
 

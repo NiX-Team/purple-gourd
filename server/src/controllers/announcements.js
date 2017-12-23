@@ -1,63 +1,37 @@
 import stream from 'stream'
 import crypto from 'crypto'
 import mongoose from '~/models/mongoose'
-import announcementModel from '~/models/announcementModel'
-import userModel from '~/models/userModel'
+import Announcement, { filter } from '~/models/announcementModel'
+import User from '~/models/userModel'
 import { error } from '~/middlewares/error'
+import Condition from '~/utils/condition'
 
-async function findById(id, opt = {}) {
-  let result
-  result = await announcementModel.findById(id, opt).populate('files.list.fid')
-  if (!result) throw error(404, 'No such announcement')
-  return result
-}
+const notNull = Condition.notNull(() => {
+  throw error(404, 'No such announcement')
+})
 
-async function findByUser(uid) {
-  return await announcementModel.find({ creator: uid })
-}
+class Announcements {
+  @filter
+  async addAnnouncement(ctx) {
+    const data = ctx.request.body,
+      newDoc = new Announcement(data)
+    newDoc.creator = ctx.session.uid
+    ctx.body = await newDoc.save()
+  }
 
-async function findByIdAndUpdate(id, doc) {
-  await announcementModel.findByIdAndUpdate(id, doc)
-  return doc
-}
-
-async function add(data) {
-  return await data.save()
-}
-
-async function remove(id) {
-  await announcementModel.findByIdAndRemove(id)
-}
-
-function filter(data) {
-  ;['_id', 'creator', 'forms', 'createdAt', 'updatedAt'].forEach(item => {
-    delete data[item]
-  })
-  return data
-}
-
-export default {
-  async handleAddAnnouncement(ctx) {
-    const jsonData = filter(ctx.request.body),
-      data = new announcementModel(jsonData)
-
-    data.creator = ctx.session.uid
-
-    ctx.body = await add(data)
-  },
-
-  async handleAddAnnouncementForm(ctx) {
-    const jsonData = ctx.request.body,
+  async addAnnouncementForm(ctx) {
+    const data = ctx.request.body,
       id = ctx.params.id,
-      result = await findById(id)
-    let formData = {}
-    result.formField.forEach(({ fieldName }) => {
-      if (jsonData[fieldName]) formData[fieldName] = jsonData[fieldName]
-    })
+      result = notNull(await Announcement.findById(id)),
+      formData = result.formField.reduce((cur, { fieldName }) => {
+        if (data[fieldName]) cur[fieldName] = data[fieldName]
+        return cur
+      }, {})
+
     if (
       result.forms.find(({ submitter }) => submitter.equals(ctx.session.uid))
     ) {
-      await announcementModel.findOneAndUpdate(
+      await Announcement.findOneAndUpdate(
         { _id: id, 'forms.submitter': ctx.session.uid },
         {
           $set: {
@@ -66,35 +40,37 @@ export default {
         },
       )
     } else {
-      await announcementModel.findByIdAndUpdate(id, {
+      await Announcement.findByIdAndUpdate(id, {
         $push: {
           forms: { data: formData, submitter: ctx.session.uid },
         },
       })
     }
     ctx.body = formData
-  },
+  }
 
-  async handleRemoveAnnouncement(ctx) {
-    const id = ctx.params.id
-    await findById(id)
-    await remove(id)
+  async removeAnnouncement(ctx) {
+    await Announcement.findByIdAndRemove(ctx.params.id)
     ctx.body = null
-  },
+  }
 
-  async handleGetAnnouncementById(ctx) {
-    ctx.body = [await findById(ctx.params.id)].filter(
+  async getAnnouncementById(ctx) {
+    ctx.body = [
+      notNull(
+        await Announcement.findById(ctx.params.id).populate('files.list.fid'),
+      ),
+    ].filter(
       item =>
         (item.forms = item.forms.filter(item =>
           item.submitter.equals(ctx.session.uid),
         )),
     )[0]
-  },
+  }
 
-  async handleGetAnnouncementsFollowing(ctx) {
-    const result = await userModel.findById(ctx.session.uid),
+  async getAnnouncementsFollowing(ctx) {
+    const result = await User.findById(ctx.session.uid),
       nowTime = new Date(Date.now())
-    ctx.body = (await announcementModel.find({
+    ctx.body = (await Announcement.find({
       creator: { $in: result.following.map(item => item.uid) },
       beginTime: { $lte: nowTime },
       endTime: { $gte: nowTime },
@@ -104,24 +80,27 @@ export default {
           item.submitter.equals(ctx.session.uid),
         )),
     )
-  },
+  }
 
-  async handleGetAnnouncementsByUser(ctx) {
-    ctx.body = await findByUser(ctx.session.uid)
-  },
+  async getAnnouncementsByUser(ctx) {
+    ctx.body = await Announcement.find({ creator: ctx.session.uid })
+  }
 
-  async handleUpdateAnnouncement(ctx) {
-    const jsonData = filter(ctx.request.body),
-      id = ctx.params.id
-    let result = await findById(id)
+  @filter
+  async updateAnnouncement(ctx) {
+    const data = ctx.request.body,
+      id = ctx.params.id,
+      result = notNull(await Announcement.findById(id))
     if (!result.creator.equals(ctx.session.uid))
       ctx.throw(403, 'Only creator can change this')
-    ctx.body = await findByIdAndUpdate(id, Object.assign(result, jsonData))
-  },
+    const doc = Object.assign(result, data)
+    await Announcement.findByIdAndUpdate(id, doc)
+    ctx.body = doc
+  }
 
-  async handleUploadFile(ctx) {
+  async uploadFile(ctx) {
     const id = ctx.params.id
-    const result = await findById(id)
+    const result = notNull(await Announcement.findById(id))
     const hash = crypto.createHash('md5')
     const file = ctx.req.file
     hash.update(file.buffer)
@@ -138,6 +117,7 @@ export default {
     } else {
       writestream = mongoose.gfs.createWriteStream({
         filename: `${file.originalname}`,
+        aliases: 1,
       })
       fileId = writestream.id
       const bufferStream = new stream.PassThrough()
@@ -145,46 +125,33 @@ export default {
       bufferStream.pipe(writestream)
     }
 
-    const targetList = result.files.find(({ submitter }) =>
+    let targetList = result.files.find(({ submitter }) =>
       submitter.equals(ctx.session.uid),
     )
 
-    if (targetList) {
-      if (!targetList.list.find(({ fid }) => fid.equals(fileId))) {
-        await announcementModel.findOneAndUpdate(
-          {
-            _id: id,
-            'files.submitter': ctx.session.uid,
-          },
-          {
-            $push: {
-              'files.$.list': { fid: fileId, uploadTime: new Date(Date.now()) },
-            },
-          },
-        )
-      }
-    } else {
-      await announcementModel.findByIdAndUpdate(id, {
-        $push: {
-          files: {
-            list: { fid: fileId, uploadTime: new Date(Date.now()) },
-            submitter: ctx.session.uid,
-          },
-        },
+    if (!targetList) {
+      result.files.push({
+        list: [],
+        submitter: ctx.session.uid,
       })
+      targetList = result.files.slice(-1)[0]
+    } else {
     }
+    if (targetList.list.length >= 5) targetList.list[0].remove()
+    targetList.list.push({ fid: fileId, uploadTime: new Date(Date.now()) })
+    await result.save()
 
-    // TODO: Can be optimized
     await new Promise((resolve, reject) => {
       if (writestream) {
         writestream.on('finish', file => resolve(file))
         writestream.on('error', e => reject(e))
       } else resolve()
     })
-    ctx.body = (await announcementModel
-      .findById(id)
-      .populate('files.list.fid')).files.filter(({ submitter }) =>
-      submitter.equals(ctx.session.uid),
-    )[0]
-  },
+
+    ctx.body = (await Announcement.findById(id).populate(
+      'files.list.fid',
+    )).files.filter(({ submitter }) => submitter.equals(ctx.session.uid))[0]
+  }
 }
+
+export default new Announcements()

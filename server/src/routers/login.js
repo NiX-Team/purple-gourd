@@ -4,4 +4,4 @@ import usersController from '~/controllers/users'
 
 const router = new Router()
 
-export default router.post('/', body(), usersController.handleLogin)
+export default router.post('/', body(), usersController.login)

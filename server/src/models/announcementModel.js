@@ -1,5 +1,6 @@
 import mongoose from './mongoose'
 import { Schema } from 'mongoose'
+import File from './fileModel'
 
 const formSchema = new Schema(
   {
@@ -19,7 +20,13 @@ const fileListSchema = new Schema({
     ref: 'file',
     required: true,
   },
-  uploadTime: { type: Date, required: true },
+})
+
+fileListSchema.pre('remove', function(next) {
+  File.findByIdAndRemove(this.fid).exec(e => {
+    if (e) throw e
+    next()
+  })
 })
 
 const fileSchema = new Schema(

@@ -5,6 +5,8 @@ import File from '~/models/fileModel'
 import { error } from '~/middlewares/error'
 import Condition from '~/utils/condition'
 
+const MAX_FILE_NUMBER = 5
+
 const notNull = Condition.notNull(() => {
   throw error(404, 'No such announcement')
 })
@@ -56,7 +58,10 @@ class Announcements {
   async getAnnouncementById(ctx) {
     ctx.body = [
       notNull(
-        await Announcement.findById(ctx.params.id).populate('files.list.fid'),
+        await Announcement.findById(ctx.params.id).populate({
+          path: 'files.list.fid',
+          select: '-buffer',
+        }),
       ),
     ].filter(
       item =>
@@ -99,7 +104,7 @@ class Announcements {
 
   async uploadFile(ctx) {
     const id = ctx.params.id
-    notNull(await Announcement.findById(id))
+    const result = notNull(await Announcement.findById(id))
     const file = ctx.req.file
     const hash = crypto.createHash('md5')
     hash.update(file.buffer)
@@ -109,7 +114,25 @@ class Announcements {
     newFile.hash = md5
     await newFile.save()
 
-    ctx.body = { message: 'Upload success' }
+    let targetList = result.files.find(({ submitter }) =>
+      submitter.equals(ctx.session.uid),
+    )
+
+    if (!targetList) {
+      result.files.push({
+        list: [],
+        submitter: ctx.session.uid,
+      })
+      targetList = result.files.slice(-1)[0]
+    }
+    if (targetList.list.length >= MAX_FILE_NUMBER)
+      await targetList.list[0].remove()
+    targetList.list.push({ fid: newFile.id })
+
+    ctx.body = (await Announcement.findById(id).populate({
+      path: 'files.list.fid',
+      select: '-buffer',
+    })).files.filter(({ submitter }) => submitter.equals(ctx.session.uid))[0]
   }
 
   async getFile(ctx) {

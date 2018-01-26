@@ -58,7 +58,7 @@ const clientConfig = {
   devtool: 'cheap-module-source-map',
   context: CLIENT_PATH,
   target: 'web',
-  entry: ['webpack-hot-middleware/client', './src/index.js'],
+  entry: ['./src/index.js'],
   output: {
     path: path.resolve(process.cwd(), 'dist'),
     publicPath: '/',
@@ -147,6 +147,21 @@ const clientConfig = {
       favicon: 'public/favicon.ico',
     }),
   ],
+  devServer: {
+    contentBase: OUTPUT_PATH,
+    hot: true,
+    compress: true,
+    historyApiFallback: {
+      rewrites: [{ from: /^\/$/, to: 'index.html' }],
+    },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        pathRewrite: { '^/api': '' },
+      },
+    },
+    port: 3000,
+  },
 }
 
 export { serverConfig, clientConfig }

@@ -16,7 +16,7 @@ const formSchema = new Schema(
 const fileListSchema = new Schema({
   fid: {
     type: Schema.Types.ObjectId,
-    ref: 'gfs',
+    ref: 'file',
     required: true,
   },
   uploadTime: { type: Date, required: true },

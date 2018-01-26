@@ -8,7 +8,8 @@
   "scripts": {
     "start": "npm run build && npm run server",
     "stop": "npx pm2 stop dist",
-    "dev": "npx babel-watch . --inspect",
+    "dev:client": "npx webpack-dev-server --config-name client",
+    "dev:server": "npx babel-watch . --inspect",
     "build": "npx webpack",
     "server": "npx pm2 start dist"
   },
@@ -42,7 +43,6 @@
     "koa-bodyparser": "^4.2.0",
     "koa-multer": "^1.0.2",
     "koa-router": "^7.3.0",
-    "koa-webpack": "^1.0.0",
     "less": "^2.7.3",
     "less-loader": "^4.0.5",
     "mobx": "^3.3.2",
@@ -57,6 +57,7 @@
     "webpack": "^3.8.1"
   },
   "devDependencies": {
-    "babel-watch": "^2.0.7"
+    "babel-watch": "^2.0.7",
+    "webpack-dev-server": "^2.11.1"
   }
 }

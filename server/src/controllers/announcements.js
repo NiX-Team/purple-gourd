@@ -1,8 +1,7 @@
-import stream from 'stream'
 import crypto from 'crypto'
-import mongoose from '~/models/mongoose'
 import Announcement, { filter } from '~/models/announcementModel'
 import User from '~/models/userModel'
+import File from '~/models/fileModel'
 import { error } from '~/middlewares/error'
 import Condition from '~/utils/condition'
 
@@ -100,57 +99,25 @@ class Announcements {
 
   async uploadFile(ctx) {
     const id = ctx.params.id
-    const result = notNull(await Announcement.findById(id))
-    const hash = crypto.createHash('md5')
+    notNull(await Announcement.findById(id))
     const file = ctx.req.file
+    const hash = crypto.createHash('md5')
     hash.update(file.buffer)
     const md5 = hash.digest('hex')
-    let writestream = null
 
-    const foundFile = await new Promise((resolve, reject) => {
-      mongoose.gfs.findOne({ md5 }, (e, f) => (e ? reject(e) : resolve(f)))
-    })
+    const newFile = new File(file)
+    newFile.hash = md5
+    await newFile.save()
 
-    let fileId
-    if (foundFile) {
-      fileId = foundFile._id
-    } else {
-      writestream = mongoose.gfs.createWriteStream({
-        filename: `${file.originalname}`,
-        aliases: 1,
-      })
-      fileId = writestream.id
-      const bufferStream = new stream.PassThrough()
-      bufferStream.end(file.buffer)
-      bufferStream.pipe(writestream)
-    }
+    ctx.body = { message: 'Upload success' }
+  }
 
-    let targetList = result.files.find(({ submitter }) =>
-      submitter.equals(ctx.session.uid),
-    )
-
-    if (!targetList) {
-      result.files.push({
-        list: [],
-        submitter: ctx.session.uid,
-      })
-      targetList = result.files.slice(-1)[0]
-    } else {
-    }
-    if (targetList.list.length >= 5) targetList.list[0].remove()
-    targetList.list.push({ fid: fileId, uploadTime: new Date(Date.now()) })
-    await result.save()
-
-    await new Promise((resolve, reject) => {
-      if (writestream) {
-        writestream.on('finish', file => resolve(file))
-        writestream.on('error', e => reject(e))
-      } else resolve()
-    })
-
-    ctx.body = (await Announcement.findById(id).populate(
-      'files.list.fid',
-    )).files.filter(({ submitter }) => submitter.equals(ctx.session.uid))[0]
+  async getFile(ctx) {
+    const id = ctx.params.id
+    const result = await File.findById(id)
+    ctx.set('Content-disposition', 'inline; filename=' + result.originalname)
+    ctx.set('Content-type', result.mimetype)
+    ctx.body = result.buffer
   }
 }
 

@@ -1,5 +1,4 @@
 import mongoose from './mongoose'
-import GridFS from '~/models/gridfsModel'
 import { Schema } from 'mongoose'
 
 const formSchema = new Schema(
@@ -23,13 +22,6 @@ const fileListSchema = new Schema({
   uploadTime: { type: Date, required: true },
 })
 
-fileListSchema.pre('remove', function(next) {
-  GridFS.findByIdAndUpdate(this.fid, { $inc: { aliases: -1 } }).exec(e => {
-    if (e) throw e
-    next()
-  })
-})
-
 const fileSchema = new Schema(
   {
     list: [fileListSchema],
@@ -41,15 +33,6 @@ const fileSchema = new Schema(
   },
   { timestamps: true, _id: false },
 )
-
-fileSchema.pre('save', function(next) {
-  GridFS.findByIdAndUpdate(this.list.slice(-1)[0].fid, {
-    $inc: { aliases: 1 },
-  }).exec(e => {
-    if (e) throw e
-    next()
-  })
-})
 
 const formFieldSchema = new Schema(
   { fieldName: { type: String } },

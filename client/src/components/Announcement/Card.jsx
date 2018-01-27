@@ -1,9 +1,21 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import { observable } from 'mobx'
-import { Card, Form, Button, Input, Divider, message, Upload, Icon } from 'antd'
+import {
+  Card,
+  Form,
+  Button,
+  Input,
+  Divider,
+  message,
+  Upload,
+  Icon,
+  Tooltip,
+} from 'antd'
 import Announcement from '@/models/Announcement'
 import styles from './Card.css'
+
+const MAX_FILE_SIZE = 16
 
 const Dragger = Upload.Dragger
 
@@ -15,7 +27,7 @@ function FileUpload(props) {
       </p>
       <p className="ant-upload-text">单击或拖动文件到此区域上传</p>
       <p className="ant-upload-hint">
-        绿色文件名为当前最新文件，文件历史最多为5项
+        绿色文件名为当前最新文件，文件历史最多为5项，单个文件最大{MAX_FILE_SIZE}M
       </p>
     </Dragger>
   )
@@ -47,13 +59,14 @@ class AnnouncementCard extends React.Component {
       .map((item, index) => {
         item.uid = index
         item.status = 'done'
+        item.url = `api/files/${item.fid._id}`
         item.name = (
-          <React.Fragment>
-            <span className={index === list.length - 1 ? styles.latest : null}>
-              {item.fid.filename}
-            </span>
-            <span className={styles.time}>{item.uploadTime}</span>
-          </React.Fragment>
+          <Tooltip placement="topLeft">
+            <div className={index === list.length - 1 ? styles.latest : null}>
+              <span>{item.fid.originalname}</span>
+              <span className={styles.time}>{item.fid.updatedAt}</span>
+            </div>
+          </Tooltip>
         )
         return item
       })
@@ -63,17 +76,26 @@ class AnnouncementCard extends React.Component {
   handleUploadChange = info => {
     const status = info.file.status
     let fileList = info.fileList
-    if (status === 'done') {
-      message.success(`${info.file.name} 上传成功`)
 
+    if (status === 'done') {
+      message.success(`${info.file.name} 上传成功！`)
       fileList = this.fileListFilter(
         fileList[fileList.length - 1].response.list,
       )
     } else if (status === 'error') {
       message.error(`${info.file.name} 上传失败`)
-    }
-
+    } else if (status === 'uploading') {
+    } else return
     this.setState({ fileList })
+  }
+
+  handleBeforeUpload = file => {
+    const isSizeOK = file.size < MAX_FILE_SIZE * 1024 * 1024
+    if (!isSizeOK)
+      message.error(
+        `${file.name} 文件过大，只允许${MAX_FILE_SIZE}M以内的文件！`,
+      )
+    return isSizeOK
   }
 
   render() {
@@ -84,8 +106,9 @@ class AnnouncementCard extends React.Component {
         showRemoveIcon: false,
       },
       multiple: false,
-      action: `/announcements/${this.announcement._id}/upload`,
+      action: `api/announcements/${this.announcement._id}/upload`,
       onChange: this.handleUploadChange,
+      beforeUpload: this.handleBeforeUpload,
     }
 
     return (

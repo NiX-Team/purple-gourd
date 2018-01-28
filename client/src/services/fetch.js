@@ -10,7 +10,7 @@ export async function request(
     },
   },
 ) {
-  const response = await fetch(url, option),
+  const response = await fetch(`/api${url}`, option),
     json = response.status === 204 ? null : await response.json()
   return { response, data: json }
 }

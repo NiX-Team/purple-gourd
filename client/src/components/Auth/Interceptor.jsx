@@ -11,7 +11,7 @@ class Interceptor extends React.Component {
       request: function(url, config = {}) {
         // Modify the url or config here
         config.credentials = 'same-origin' // Please see https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials
-        return [`/api${url}`, config]
+        return [url, config]
       },
 
       requestError: function(error) {

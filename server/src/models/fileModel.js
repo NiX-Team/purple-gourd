@@ -4,11 +4,17 @@ import { Buffer } from 'buffer'
 
 const fileSchema = new Schema(
   {
-    hash: { type: String },
-    originalname: { type: String },
-    mimetype: { type: String },
+    hash: { type: String, required: true },
+    originalname: { type: String, required: true },
+    mimetype: { type: String, required: true },
     buffer: { type: Buffer },
-    size: { type: Number },
+    size: { type: Number, required: true },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+      required: true,
+      writable: false,
+    },
   },
   { timestamps: true },
 )

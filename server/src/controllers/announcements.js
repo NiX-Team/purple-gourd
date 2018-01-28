@@ -1,4 +1,6 @@
 import crypto from 'crypto'
+import { PassThrough } from 'stream'
+import archiver from 'archiver'
 import Announcement, { filter } from '~/models/announcementModel'
 import User from '~/models/userModel'
 import File from '~/models/fileModel'
@@ -63,12 +65,15 @@ class Announcements {
           select: '-buffer',
         }),
       ),
-    ].filter(
-      item =>
-        (item.forms = item.forms.filter(item =>
-          item.submitter.equals(ctx.session.uid),
-        )),
-    )[0]
+    ].filter(item => {
+      item.forms = item.forms.filter(item =>
+        item.submitter.equals(ctx.session.uid),
+      )
+      item.files = item.files.filter(item =>
+        item.submitter.equals(ctx.session.uid),
+      )
+      return true
+    })[0]
   }
 
   async getAnnouncementsFollowing(ctx) {
@@ -78,12 +83,15 @@ class Announcements {
       creator: { $in: result.following.map(item => item.uid) },
       beginTime: { $lte: nowTime },
       endTime: { $gte: nowTime },
-    })).filter(
-      item =>
-        (item.forms = item.forms.filter(item =>
-          item.submitter.equals(ctx.session.uid),
-        )),
-    )
+    })).filter(item => {
+      item.forms = item.forms.filter(item =>
+        item.submitter.equals(ctx.session.uid),
+      )
+      item.files = item.files.filter(item =>
+        item.submitter.equals(ctx.session.uid),
+      )
+      return true
+    })
   }
 
   async getAnnouncementsByUser(ctx) {
@@ -112,6 +120,7 @@ class Announcements {
 
     const newFile = new File(file)
     newFile.hash = md5
+    newFile.owner = ctx.session.uid
     await newFile.save()
 
     let targetList = result.files.find(({ submitter }) =>
@@ -128,6 +137,7 @@ class Announcements {
     if (targetList.list.length >= MAX_FILE_NUMBER)
       await targetList.list[0].remove()
     targetList.list.push({ fid: newFile.id })
+    await result.save()
 
     ctx.body = (await Announcement.findById(id).populate({
       path: 'files.list.fid',
@@ -135,11 +145,46 @@ class Announcements {
     })).files.filter(({ submitter }) => submitter.equals(ctx.session.uid))[0]
   }
 
+  async getArchive(ctx) {
+    const id = ctx.params.id
+    const result = notNull(
+      await Announcement.findById(id)
+        .populate('files.list.fid')
+        .populate('files.submitter'),
+    )
+    if (!result.creator.equals(ctx.session.uid))
+      ctx.throw(403, 'You are not the creator')
+    const archive = archiver('zip', {
+      zlib: { level: 9 },
+    })
+    result.files.forEach(item => {
+      const file = item.list.pop().fid
+      archive.append(file.buffer, {
+        name: `${item.submitter.username}.${file.originalname
+          .split('.')
+          .pop()}`,
+      })
+    })
+    archive.finalize()
+    ctx.set('Content-Disposition', 'inline; filename=Archive.zip')
+    ctx.set('Content-Type', 'application/zip')
+    ctx.body = archive.pipe(PassThrough())
+  }
+
   async getFile(ctx) {
     const id = ctx.params.id
     const result = await File.findById(id)
-    ctx.set('Content-disposition', 'inline; filename=' + result.originalname)
-    ctx.set('Content-type', result.mimetype)
+    if (
+      result === null ||
+      !(result || { owner: '' }).owner.equals(ctx.session.uid)
+    ) {
+      ctx.throw(404, 'File not found')
+    }
+    ctx.set(
+      'Content-Disposition',
+      `inline;filename=${encodeURI(result.originalname)}`,
+    )
+    ctx.set('Content-Type', result.mimetype)
     ctx.body = result.buffer
   }
 }

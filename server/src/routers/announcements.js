@@ -6,6 +6,9 @@ import announcementsController from '~/controllers/announcements'
 const router = new Router(),
   upload = new multer({
     storage: new multer.memoryStorage(),
+    limits: {
+      fileSize: 16 * 1024 * 1024,
+    },
   })
 
 export default router
@@ -13,6 +16,7 @@ export default router
   .post('/', body(), announcementsController.addAnnouncement)
   .put('/:id', body(), announcementsController.updateAnnouncement)
   .get('/:id', announcementsController.getAnnouncementById)
+  .get('/:id/archive', announcementsController.getArchive)
   .post('/:id', body(), announcementsController.addAnnouncementForm)
   .delete('/:id', announcementsController.removeAnnouncement)
   .post(

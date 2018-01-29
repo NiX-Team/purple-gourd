@@ -1,15 +1,9 @@
 import mongoose from './mongoose'
 import { Schema } from 'mongoose'
 
-const followersSchema = new Schema(
-  { uid: { type: Schema.Types.ObjectId, ref: 'user' } },
-  { _id: false },
-)
+const followersSchema = new Schema({ uid: { type: Schema.Types.ObjectId, ref: 'user' } }, { _id: false })
 
-const followingSchema = new Schema(
-  { uid: { type: Schema.Types.ObjectId, ref: 'user' } },
-  { _id: false },
-)
+const followingSchema = new Schema({ uid: { type: Schema.Types.ObjectId, ref: 'user' } }, { _id: false })
 
 const userSchema = new Schema(
   {
@@ -22,9 +16,6 @@ const userSchema = new Schema(
   { timestamps: true },
 )
 
-const User = mongoose.model(
-  'user' /* Will automatically add 's' or 'es', intersting */,
-  userSchema,
-)
+const User = mongoose.model('user' /* Will automatically add 's' or 'es', intersting */, userSchema)
 
 export default User

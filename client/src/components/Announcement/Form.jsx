@@ -69,9 +69,7 @@ class AnnouncementForm extends React.Component {
     const { getFieldDecorator, getFieldValue } = this.props.form
     const rangeConfig = {
       initialValue: [moment(Date.now()), moment(Date.now()).add(1, 'week')],
-      rules: [
-        { type: 'array', required: true, message: 'Please select time!' },
-      ],
+      rules: [{ type: 'array', required: true, message: 'Please select time!' }],
     }
     const formItemLayout = {
       labelCol: { xs: { span: 24 }, sm: { span: 4 } },
@@ -99,12 +97,7 @@ class AnnouncementForm extends React.Component {
                 message: '请输入字段名或删除该字段',
               },
             ],
-          })(
-            <Input
-              placeholder="字段名"
-              style={{ width: '60%', marginRight: 8 }}
-            />,
-          )}
+          })(<Input placeholder="字段名" style={{ width: '60%', marginRight: 8 }} />)}
           {keys.length > 1 ? (
             <Icon
               className="dynamic-delete-button"
@@ -125,20 +118,14 @@ class AnnouncementForm extends React.Component {
             })(<Input />)}
           </FormItem>
           <FormItem label="起止时间">
-            {getFieldDecorator('rangeTime', rangeConfig)(
-              <RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />,
-            )}
+            {getFieldDecorator('rangeTime', rangeConfig)(<RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
           </FormItem>
           <FormItem label="公告类型">
             {getFieldDecorator('uploadType', {
               rules: [{ required: true, message: '请选择你的公告类型!' }],
               initialValue: 'form',
             })(
-              <Select
-                placeholder="选择公告的收取类型"
-                onChange={this.handleSelectChange}
-                disabled
-              >
+              <Select placeholder="选择公告的收取类型" onChange={this.handleSelectChange} disabled>
                 <Option value="form">表格</Option>
                 <Option value="file">文件</Option>
               </Select>,

@@ -31,9 +31,7 @@ class Announcements {
         return cur
       }, {})
 
-    if (
-      result.forms.find(({ submitter }) => submitter.equals(ctx.session.uid))
-    ) {
+    if (result.forms.find(({ submitter }) => submitter.equals(ctx.session.uid))) {
       await Announcement.findOneAndUpdate(
         { _id: id, 'forms.submitter': ctx.session.uid },
         {
@@ -66,12 +64,8 @@ class Announcements {
         }),
       ),
     ].filter(item => {
-      item.forms = item.forms.filter(item =>
-        item.submitter.equals(ctx.session.uid),
-      )
-      item.files = item.files.filter(item =>
-        item.submitter.equals(ctx.session.uid),
-      )
+      item.forms = item.forms.filter(item => item.submitter.equals(ctx.session.uid))
+      item.files = item.files.filter(item => item.submitter.equals(ctx.session.uid))
       return true
     })[0]
   }
@@ -84,12 +78,8 @@ class Announcements {
       beginTime: { $lte: nowTime },
       endTime: { $gte: nowTime },
     })).filter(item => {
-      item.forms = item.forms.filter(item =>
-        item.submitter.equals(ctx.session.uid),
-      )
-      item.files = item.files.filter(item =>
-        item.submitter.equals(ctx.session.uid),
-      )
+      item.forms = item.forms.filter(item => item.submitter.equals(ctx.session.uid))
+      item.files = item.files.filter(item => item.submitter.equals(ctx.session.uid))
       return true
     })
   }
@@ -103,8 +93,7 @@ class Announcements {
     const data = ctx.request.body,
       id = ctx.params.id,
       result = notNull(await Announcement.findById(id))
-    if (!result.creator.equals(ctx.session.uid))
-      ctx.throw(403, 'Only creator can change this')
+    if (!result.creator.equals(ctx.session.uid)) ctx.throw(403, 'Only creator can change this')
     const doc = Object.assign(result, data)
     await Announcement.findByIdAndUpdate(id, doc)
     ctx.body = doc
@@ -123,9 +112,7 @@ class Announcements {
     newFile.owner = ctx.session.uid
     await newFile.save()
 
-    let targetList = result.files.find(({ submitter }) =>
-      submitter.equals(ctx.session.uid),
-    )
+    let targetList = result.files.find(({ submitter }) => submitter.equals(ctx.session.uid))
 
     if (!targetList) {
       result.files.push({
@@ -134,8 +121,7 @@ class Announcements {
       })
       targetList = result.files.slice(-1)[0]
     }
-    if (targetList.list.length >= MAX_FILE_NUMBER)
-      await targetList.list[0].remove()
+    if (targetList.list.length >= MAX_FILE_NUMBER) await targetList.list[0].remove()
     targetList.list.push({ fid: newFile.id })
     await result.save()
 
@@ -152,17 +138,14 @@ class Announcements {
         .populate('files.list.fid')
         .populate('files.submitter'),
     )
-    if (!result.creator.equals(ctx.session.uid))
-      ctx.throw(403, 'You are not the creator')
+    if (!result.creator.equals(ctx.session.uid)) ctx.throw(403, 'You are not the creator')
     const archive = archiver('zip', {
       zlib: { level: 9 },
     })
     result.files.forEach(item => {
       const file = item.list.pop().fid
       archive.append(file.buffer, {
-        name: `${item.submitter.username}.${file.originalname
-          .split('.')
-          .pop()}`,
+        name: `${item.submitter.username}.${file.originalname.split('.').pop()}`,
       })
     })
     archive.finalize()
@@ -174,16 +157,10 @@ class Announcements {
   async getFile(ctx) {
     const id = ctx.params.id
     const result = await File.findById(id)
-    if (
-      result === null ||
-      !(result || { owner: '' }).owner.equals(ctx.session.uid)
-    ) {
+    if (result === null || !(result || { owner: '' }).owner.equals(ctx.session.uid)) {
       ctx.throw(404, 'File not found')
     }
-    ctx.set(
-      'Content-Disposition',
-      `inline;filename=${encodeURI(result.originalname)}`,
-    )
+    ctx.set('Content-Disposition', `inline;filename=${encodeURI(result.originalname)}`)
     ctx.set('Content-Type', result.mimetype)
     ctx.body = result.buffer
   }

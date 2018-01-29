@@ -11,7 +11,8 @@
     "dev:client": "npx webpack-dev-server --config-name client",
     "dev:server": "npx babel-watch . --inspect",
     "build": "npx webpack",
-    "server": "npx pm2 start dist"
+    "server": "npx pm2 start dist",
+    "format": "prettier --write \"./**/*.jsx\" \"./**/*.js\""
   },
   "dependencies": {
     "antd": "^3.0.0",

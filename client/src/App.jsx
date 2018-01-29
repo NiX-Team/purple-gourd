@@ -1,20 +1,11 @@
 import React from 'react'
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-} from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
 import { observer } from 'mobx-react'
 import Login from '@/components/Login'
 import Dashboard from '@/components/Dashboard'
 import Interceptor from '@/components/Auth/Interceptor'
 import Account from '@/components/Account'
-import {
-  AnnouncementCard,
-  AnnouncementForm,
-  AnnouncementPost,
-} from '@/components/Announcement'
+import { AnnouncementCard, AnnouncementForm, AnnouncementPost } from '@/components/Announcement'
 import User from '@/models/User'
 
 @observer
@@ -31,18 +22,11 @@ class App extends React.Component {
           ) : null}
           <Interceptor />
           <Switch>
-            <Route
-              exact
-              path="/"
-              render={() => <Redirect to="/dashboard/following" />}
-            />
+            <Route exact path="/" render={() => <Redirect to="/dashboard/following" />} />
             <Route path="/login" component={Login} />
             <Route path="/post" component={AnnouncementForm} />
             <Route path="/dashboard/:tab" component={Dashboard} />
-            <Route
-              path="/dashboard"
-              render={() => <Redirect to="/dashboard/following" />}
-            />
+            <Route path="/dashboard" render={() => <Redirect to="/dashboard/following" />} />
             <Route path="/:id" component={AnnouncementCard} />
           </Switch>
         </React.Fragment>

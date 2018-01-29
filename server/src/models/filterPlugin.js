@@ -19,9 +19,7 @@ export default function filterPlugin(schema, opt) {
       if (blackList[key] === true) {
         if (Array.isArray(obj[key])) {
           cur[key] = obj[key].map(item => {
-            return (tree[key].type || tree[key])[0].statics.getFilterObject(
-              item,
-            )
+            return (tree[key].type || tree[key])[0].statics.getFilterObject(item)
           })
         } else cur[key] = obj[key]
       }

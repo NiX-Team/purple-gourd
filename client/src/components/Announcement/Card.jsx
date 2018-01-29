@@ -1,17 +1,7 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import { observable } from 'mobx'
-import {
-  Card,
-  Form,
-  Button,
-  Input,
-  Divider,
-  message,
-  Upload,
-  Icon,
-  Tooltip,
-} from 'antd'
+import { Card, Form, Button, Input, Divider, message, Upload, Icon, Tooltip } from 'antd'
 import Announcement from '@/models/Announcement'
 import styles from './Card.css'
 
@@ -26,9 +16,7 @@ function FileUpload(props) {
         <Icon type="inbox" />
       </p>
       <p className="ant-upload-text">单击或拖动文件到此区域上传</p>
-      <p className="ant-upload-hint">
-        绿色文件名为当前最新文件，文件历史最多为5项，单个文件最大{MAX_FILE_SIZE}M
-      </p>
+      <p className="ant-upload-hint">绿色文件名为当前最新文件，文件历史最多为5项，单个文件最大{MAX_FILE_SIZE}M</p>
     </Dragger>
   )
 }
@@ -79,9 +67,7 @@ class AnnouncementCard extends React.Component {
 
     if (status === 'done') {
       message.success(`${info.file.name} 上传成功！`)
-      fileList = this.fileListFilter(
-        fileList[fileList.length - 1].response.list,
-      )
+      fileList = this.fileListFilter(fileList[fileList.length - 1].response.list)
     } else if (status === 'error') {
       message.error(`${info.file.name} 上传失败`)
     } else if (status === 'uploading') {
@@ -91,10 +77,7 @@ class AnnouncementCard extends React.Component {
 
   handleBeforeUpload = file => {
     const isSizeOK = file.size < MAX_FILE_SIZE * 1024 * 1024
-    if (!isSizeOK)
-      message.error(
-        `${file.name} 文件过大，只允许${MAX_FILE_SIZE}M以内的文件！`,
-      )
+    if (!isSizeOK) message.error(`${file.name} 文件过大，只允许${MAX_FILE_SIZE}M以内的文件！`)
     return isSizeOK
   }
 
@@ -113,10 +96,7 @@ class AnnouncementCard extends React.Component {
 
     return (
       <Card title="公告详情" bordered={false} loading={this.loading}>
-        <Card.Meta
-          title={this.announcement.title}
-          description={this.announcement.description}
-        />
+        <Card.Meta title={this.announcement.title} description={this.announcement.description} />
         <Divider />
         <Form>
           {this.announcement.uploadType === 'form' ? (

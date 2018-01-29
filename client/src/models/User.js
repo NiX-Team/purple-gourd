@@ -21,8 +21,7 @@ const User = new class User {
 }()
 
 intercept(User, 'isAuthenticated', change => {
-  if (typeof change.newValue === 'string')
-    change.newValue = change.newValue === 'false' ? false : true
+  if (typeof change.newValue === 'string') change.newValue = change.newValue === 'false' ? false : true
   return change
 })
 

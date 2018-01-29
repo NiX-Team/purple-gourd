@@ -56,28 +56,18 @@ class Dashboard extends React.Component {
     return (
       <Card bordered={false}>
         <Card.Meta title={<h1>公告</h1>} />
-        <Tabs
-          activeKey={this.key}
-          size="large"
-          onChange={key => (this.key = key)}
-        >
+        <Tabs activeKey={this.key} size="large" onChange={key => (this.key = key)}>
           <TabPane tab="我关注的" key="following">
             <List
               loading={this.loading}
               itemLayout="horizontal"
               dataSource={this.followingAnnouncements}
               renderItem={item => (
-                <Card
-                  hoverable={true}
-                  style={{ marginTop: '12px' }}
-                  onClick={this.handleCardClick(item._id)}
-                >
+                <Card hoverable={true} style={{ marginTop: '12px' }} onClick={this.handleCardClick(item._id)}>
                   <List.Item>
                     <List.Item.Meta
                       title={item.title}
-                      description={
-                        item.description ? item.description : '无描述...'
-                      }
+                      description={item.description ? item.description : '无描述...'}
                     />
                     <span>发布于{item.createdAt}</span>
                   </List.Item>
@@ -91,17 +81,11 @@ class Dashboard extends React.Component {
               itemLayout="horizontal"
               dataSource={this.createdAnnouncements}
               renderItem={item => (
-                <Card
-                  hoverable={true}
-                  style={{ marginTop: '12px' }}
-                  onClick={this.handleCardClick(item._id)}
-                >
+                <Card hoverable={true} style={{ marginTop: '12px' }} onClick={this.handleCardClick(item._id)}>
                   <List.Item>
                     <List.Item.Meta
                       title={item.title}
-                      description={
-                        item.description ? item.description : '无描述...'
-                      }
+                      description={item.description ? item.description : '无描述...'}
                     />
                     <span>发布于{item.createdAt}</span>
                   </List.Item>

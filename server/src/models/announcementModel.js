@@ -41,10 +41,7 @@ const fileSchema = new Schema(
   { timestamps: true, _id: false },
 )
 
-const formFieldSchema = new Schema(
-  { fieldName: { type: String } },
-  { _id: false },
-)
+const formFieldSchema = new Schema({ fieldName: { type: String } }, { _id: false })
 
 const announcementSchema = new Schema(
   {

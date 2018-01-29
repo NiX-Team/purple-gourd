@@ -19,8 +19,4 @@ export default router
   .get('/:id/archive', announcementsController.getArchive)
   .post('/:id', body(), announcementsController.addAnnouncementForm)
   .delete('/:id', announcementsController.removeAnnouncement)
-  .post(
-    '/:id/upload',
-    upload.single('file'),
-    announcementsController.uploadFile,
-  )
+  .post('/:id/upload', upload.single('file'), announcementsController.uploadFile)

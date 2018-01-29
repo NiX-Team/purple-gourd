@@ -24,8 +24,7 @@ class LoginForm extends React.Component {
   }
 
   componentWillMount() {
-    if (User.isAuthenticated && this.props.location.isLogout !== true)
-      this.props.history.push('/dashboard')
+    if (User.isAuthenticated && this.props.location.isLogout !== true) this.props.history.push('/dashboard')
     else if (this.props.location.from) message.info('未登录！')
   }
 
@@ -50,13 +49,7 @@ class LoginForm extends React.Component {
           <FormItem>
             {getFieldDecorator('username', {
               rules: [{ required: true, message: '请输入用户名!' }],
-            })(
-              <Input
-                prefix={<Icon type="user" />}
-                placeholder="用户名"
-                autoComplete="username"
-              />,
-            )}
+            })(<Input prefix={<Icon type="user" />} placeholder="用户名" autoComplete="username" />)}
           </FormItem>
           <FormItem>
             {getFieldDecorator('password', {

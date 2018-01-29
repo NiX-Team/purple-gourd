@@ -12,10 +12,5 @@ export default router
   .use('/login', login.routes(), login.allowedMethods())
   .use('/logout', logout.routes(), logout.allowedMethods())
   .use('/users', auth(), users.routes(), users.allowedMethods())
-  .use(
-    '/announcements',
-    auth(),
-    announcements.routes(),
-    announcements.allowedMethods(),
-  )
+  .use('/announcements', auth(), announcements.routes(), announcements.allowedMethods())
   .use('/files', auth(), files.routes(), users.allowedMethods())

@@ -6,14 +6,14 @@ import styles from './PostButton.css'
 function PostButton(props) {
   return (
     <Affix
-      offsetBottom={16}
+      offsetBottom={12}
       style={{
         position: 'fixed',
         zIndex: 1,
         right: 0,
         bottom: 0,
-        marginBottom: '16px',
-        marginRight: '16px',
+        marginBottom: '12px',
+        marginRight: '12px',
       }}
     >
       <Link to="/post">

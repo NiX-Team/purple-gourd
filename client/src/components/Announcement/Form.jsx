@@ -123,7 +123,7 @@ class AnnouncementForm extends React.Component {
           <FormItem label="公告类型">
             {getFieldDecorator('uploadType', {
               rules: [{ required: true, message: '请选择你的公告类型!' }],
-              initialValue: 'form',
+              initialValue: 'file',
             })(
               <Select placeholder="选择公告的收取类型" onChange={this.handleSelectChange} disabled>
                 <Option value="form">表格</Option>
@@ -131,12 +131,16 @@ class AnnouncementForm extends React.Component {
               </Select>,
             )}
           </FormItem>
-          {formItems}
-          <FormItem {...formItemLayoutWithOutLabel}>
-            <Button type="dashed" onClick={this.add} style={{ width: '60%' }}>
-              <Icon type="plus" /> 添加字段
-            </Button>
-          </FormItem>
+          {true ? null : (
+            <React.Fragment>
+              {formItems}
+              <FormItem {...formItemLayoutWithOutLabel}>
+                <Button type="dashed" onClick={this.add} style={{ width: '60%' }}>
+                  <Icon type="plus" /> 添加字段
+                </Button>
+              </FormItem>
+            </React.Fragment>
+          )}
           <FormItem>
             <Button type="primary" htmlType="submit">
               Submit

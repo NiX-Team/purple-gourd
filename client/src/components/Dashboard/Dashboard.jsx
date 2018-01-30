@@ -21,7 +21,7 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
-    this.key = this.props.match.params.tab
+    this.key = (this.props.location.state || { tab: 'following' }).tab
   }
 
   handleTagChange = key => {
@@ -42,7 +42,11 @@ class Dashboard extends React.Component {
       default:
         return
     }
-    this.props.history.replace(key)
+    this.props.history.replace({
+      state: {
+        tab: key,
+      },
+    })
   }
 
   handleCardClick = item => e => {

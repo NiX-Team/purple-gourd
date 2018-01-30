@@ -22,11 +22,10 @@ class App extends React.Component {
           ) : null}
           <Interceptor />
           <Switch>
-            <Route exact path="/" render={() => <Redirect to="/dashboard/following" />} />
+            <Route exact path="/" render={() => <Redirect to="/dashboard" />} />
             <Route path="/login" component={Login} />
             <Route path="/post" component={AnnouncementForm} />
-            <Route path="/dashboard/:tab" component={Dashboard} />
-            <Route path="/dashboard" render={() => <Redirect to="/dashboard/following" />} />
+            <Route path="/dashboard" component={Dashboard} />
             <Route path="/:id" component={AnnouncementCard} />
           </Switch>
         </React.Fragment>

@@ -30,7 +30,13 @@ const less_module =
   NODE_ENV === 'production'
     ? {
         test: /\.less$/,
-        use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: ['css-loader', 'less-loader'] }),
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [
+            { loader: 'css-loader', options: { minimize: true, sourceMap: true } },
+            { loader: 'less-loader', options: { sourceMap: true } },
+          ],
+        }),
       }
     : {
         test: /\.less$/,
@@ -43,13 +49,15 @@ const clientConfig = {
   devtool: NODE_ENV === 'production' ? 'source-map' : 'cheap-module-source-map',
   context: CLIENT_PATH,
   target: 'web',
-  entry: ['./src/index.js'],
+  entry: {
+    main: ['./src/index.js'],
+  },
   output: {
-    path: path.resolve(process.cwd(), 'dist'),
+    path: OUTPUT_PATH,
     publicPath: '/',
     pathinfo: true,
-    filename: 'assets/js/bundle.[chunkhash:8].js',
-    chunkFilename: 'assets/js/bundle.[chunkhash:8].chunk.js',
+    filename: 'assets/js/[name].[chunkhash:8].js',
+    chunkFilename: 'assets/js/[name].[chunkhash:8].chunk.js',
   },
   resolve: {
     extensions: ['.js', '.json', '.jsx'],
@@ -112,6 +120,16 @@ const clientConfig = {
         minifyCSS: true,
         minifyURLs: true,
       },
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      minChunks: function(module) {
+        return module.context && module.context.indexOf('node_modules') !== -1
+      },
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'manifest',
+      minChunks: Infinity,
     }),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   ]

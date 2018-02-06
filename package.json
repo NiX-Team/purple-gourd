@@ -12,7 +12,13 @@
     "dev:server": "npx babel-watch . --inspect",
     "build": "npx webpack",
     "server": "npx pm2 start dist",
-    "format": "prettier --write \"./**/*.jsx\" \"./**/*.js\""
+    "lint": "npx eslint \"./**/*.jsx\" \"./**/*.js\"",
+    "format": "npx prettier --write \"./**/*.jsx\" \"./**/*.js\""
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   },
   "dependencies": {
     "antd": "^3.0.0",
@@ -61,6 +67,7 @@
   },
   "devDependencies": {
     "babel-watch": "^2.0.7",
+    "husky": "^0.15.0-rc.6",
     "webpack-dev-server": "^2.11.1"
   }
 }

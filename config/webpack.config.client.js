@@ -56,8 +56,8 @@ const clientConfig = {
     path: OUTPUT_PATH,
     publicPath: '/',
     pathinfo: true,
-    filename: 'assets/js/[name].[chunkhash:8].js',
-    chunkFilename: 'assets/js/[name].[chunkhash:8].chunk.js',
+    filename: `assets/js/${NODE_ENV === 'production' ? '[name].[chunkhash:8].js' : 'bundle.js'}`,
+    chunkFilename: `assets/js/${NODE_ENV === 'production' ? '[name].[chunkhash:8].chunk.js' : '[name].chunk.js'}`,
   },
   resolve: {
     extensions: ['.js', '.json', '.jsx'],
@@ -100,7 +100,6 @@ const clientConfig = {
     ],
   },
   plugins: [
-    new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.EnvironmentPlugin({ NODE_ENV }),
@@ -121,34 +120,33 @@ const clientConfig = {
         minifyURLs: true,
       },
     }),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      minChunks: function(module) {
-        return module.context && module.context.indexOf('node_modules') !== -1
-      },
-    }),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'manifest',
-      minChunks: Infinity,
-    }),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   ]
     .concat(
       NODE_ENV === 'production'
         ? [
+            new ExtractTextPlugin({ filename: 'assets/css/style.[contenthash:8].css' }),
+            new webpack.optimize.OccurrenceOrderPlugin(),
             new webpack.optimize.UglifyJsPlugin({
               compress: { warnings: false, comparisons: false },
               mangle: { safari10: true },
               output: { comments: false, ascii_only: true },
               sourceMap: true,
             }),
+            new webpack.optimize.CommonsChunkPlugin({
+              name: 'vendor',
+              minChunks: function(module) {
+                return module.context && module.context.indexOf('node_modules') !== -1
+              },
+            }),
+            new webpack.optimize.CommonsChunkPlugin({
+              name: 'manifest',
+              minChunks: Infinity,
+            }),
           ]
         : [],
     )
-    .concat(
-      NODE_ENV === 'production' ? [new ExtractTextPlugin({ filename: 'assets/css/style.[contenthash:8].css' })] : [],
-    )
-    .concat(NODE_ENV === 'production' ? [] : [new webpack.HotModuleReplacementPlugin()]),
+    .concat(NODE_ENV !== 'production' ? [new webpack.HotModuleReplacementPlugin()] : []),
   devServer: {
     contentBase: OUTPUT_PATH,
     hot: true,

@@ -1,4 +1,4 @@
-import mongoose from './mongoose'
+import mongoose from '~/config/mongoose'
 import { Schema } from 'mongoose'
 import { Buffer } from 'buffer'
 

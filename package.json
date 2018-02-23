@@ -63,6 +63,7 @@
     "react-dom": "^16.2.0",
     "react-router-dom": "^4.2.2",
     "style-loader": "^0.19.0",
+    "uid-safe": "^2.1.5",
     "webpack": "^3.8.1"
   },
   "devDependencies": {

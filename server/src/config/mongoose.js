@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import filter from './filterPlugin'
+import filter from '~/lib/filterPlugin'
 
 mongoose.Promise = global.Promise
 mongoose.plugin(filter)

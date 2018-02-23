@@ -1,10 +1,10 @@
+import uid from 'uid-safe'
 import Store, { ONE_DAY } from './memoryStore'
-import redis from './redis'
+import redis from '~/config/redis'
 
 export default class RedisStore extends Store {
   constructor() {
     super()
-    this.sid = 0
     this.redis = redis
   }
 
@@ -20,11 +20,11 @@ export default class RedisStore extends Store {
     } catch (e) {
       throw e
     }
+    return sid
   }
 
   async add(session = {}, maxAge = ONE_DAY) {
-    await this.set(++this.sid + '', session, maxAge)
-    return this.sid
+    return await this.set(await uid(32), session, maxAge)
   }
 
   async delete(sid) {

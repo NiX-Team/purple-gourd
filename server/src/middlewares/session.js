@@ -1,8 +1,14 @@
-import RedisStore from '~/models/redisStore'
-import { ONE_DAY } from '~/models/memoryStore'
+import RedisStore from '~/lib/redisStore'
+import { ONE_DAY } from '~/lib/memoryStore'
 
-export default (opts = {}) => {
-  const { key = 'session', store = new RedisStore(), maxAge = ONE_DAY } = opts
+export default opts => {
+  const defaultOpts = {
+    key: 'session',
+    store: new RedisStore(),
+    maxAge: ONE_DAY,
+  }
+  opts = Object.assign(defaultOpts, opts)
+  const { key, store, maxAge } = opts
 
   return async (ctx, next) => {
     let id = ctx.cookies.get(key, opts),
@@ -29,6 +35,6 @@ export default (opts = {}) => {
     }
 
     let sid = await store.add(ctx.session, maxAge)
-    ctx.cookies.set(key, sid + '', opts)
+    ctx.cookies.set(key, sid, opts)
   }
 }

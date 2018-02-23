@@ -1,7 +1,7 @@
 import http from 'http'
 import Koa from 'koa'
 import error from '~/middlewares/error'
-import routers from '~/routers'
+import routers from '~/routes'
 import session from '~/middlewares/session'
 
 const app = new Koa()

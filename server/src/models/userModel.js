@@ -1,4 +1,4 @@
-import mongoose from './mongoose'
+import mongoose from '~/config/mongoose'
 import { Schema } from 'mongoose'
 
 const followersSchema = new Schema({ uid: { type: Schema.Types.ObjectId, ref: 'user' } }, { _id: false })

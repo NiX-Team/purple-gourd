@@ -84,7 +84,7 @@ class Announcements {
     })
   }
 
-  async getAnnouncementsByUser(ctx) {
+  async getAnnouncementsUserCreated(ctx) {
     ctx.body = await Announcement.find({ creator: ctx.session.uid })
   }
 
@@ -152,17 +152,6 @@ class Announcements {
     ctx.set('Content-Disposition', 'inline; filename=Archive.zip')
     ctx.set('Content-Type', 'application/zip')
     ctx.body = archive.pipe(PassThrough())
-  }
-
-  async getFile(ctx) {
-    const id = ctx.params.id
-    const result = await File.findById(id)
-    if (result === null || !(result || { owner: '' }).owner.equals(ctx.session.uid)) {
-      ctx.throw(404, 'File not found')
-    }
-    ctx.set('Content-Disposition', `inline;filename=${encodeURI(result.originalname)}`)
-    ctx.set('Content-Type', result.mimetype)
-    ctx.body = result.buffer
   }
 }
 

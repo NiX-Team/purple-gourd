@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, DatePicker, Button, Select, Input, message, Icon } from 'antd'
+import { Form, DatePicker, Button, Select, Input, message, Icon, Card } from 'antd'
 import moment from 'moment'
 import Announcement from '@/models/Announcement'
 
@@ -32,8 +32,8 @@ class AnnouncementForm extends React.Component {
     })
   }
 
-  componentDidMount() {
-    this.add()
+  state = {
+    nowTime: Date.now(),
   }
 
   handleSubmit = e => {
@@ -59,17 +59,20 @@ class AnnouncementForm extends React.Component {
       delete values['rangeTime']
 
       Announcement.postAnnouncement(values).then(({ response }) => {
-        if (response.ok) message.success('发布成功！')
-        else message.error('发布失败！')
+        if (response.ok) {
+          message.success('发布成功！')
+          this.props.history.push({ pathname: `/dashboard`, state: { tab: 'created' } })
+        } else message.error('发布失败！')
       })
     })
   }
 
   render() {
     const { getFieldDecorator, getFieldValue } = this.props.form
+    const { nowTime } = this.state
     const rangeConfig = {
-      initialValue: [moment(Date.now()), moment(Date.now()).add(1, 'week')],
-      rules: [{ type: 'array', required: true, message: 'Please select time!' }],
+      initialValue: [moment(nowTime), moment(nowTime).add(1, 'week')],
+      rules: [{ type: 'array', required: true, message: '请选择起止时间！' }],
     }
     const formItemLayout = {
       labelCol: { xs: { span: 24 }, sm: { span: 4 } },
@@ -110,13 +113,15 @@ class AnnouncementForm extends React.Component {
       )
     })
     return (
-      <div>
+      <Card bordered={false}>
+        <Card.Meta title={<h1>发布</h1>} />
         <Form onSubmit={this.handleSubmit}>
           <FormItem label="标题">
             {getFieldDecorator('title', {
               rules: [{ required: true, message: '请输入公告标题！' }],
             })(<Input />)}
           </FormItem>
+          <FormItem label="描述">{getFieldDecorator('description')(<Input.TextArea rows={4} />)}</FormItem>
           <FormItem label="起止时间">
             {getFieldDecorator('rangeTime', rangeConfig)(<RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
           </FormItem>
@@ -143,11 +148,11 @@ class AnnouncementForm extends React.Component {
           )}
           <FormItem>
             <Button type="primary" htmlType="submit">
-              Submit
+              发布
             </Button>
           </FormItem>
         </Form>
-      </div>
+      </Card>
     )
   }
 }

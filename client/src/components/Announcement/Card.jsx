@@ -37,9 +37,7 @@ class AnnouncementCard extends React.Component {
     const { data } = await Announcement.getAnnouncementById(id)
     this.announcement = data
     this.loading = false
-    this.setState({
-      fileList: this.fileListFilter(this.announcement.files[0].list),
-    })
+    this.setState({ fileList: this.fileListFilter(this.announcement.length ? this.announcement.files[0].list : []) })
   }
 
   fileListFilter = list => {

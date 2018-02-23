@@ -1,6 +1,6 @@
 import { request } from '@/services/fetch'
 
-export default new class Announcement {
+class AnnouncementModel {
   async getFollowingAnnouncements() {
     return await request('/announcements')
   }
@@ -16,4 +16,8 @@ export default new class Announcement {
   async postAnnouncement(data) {
     return await request('/announcements', 'POST', data)
   }
-}()
+}
+
+const Announcement = new AnnouncementModel()
+
+export default Announcement

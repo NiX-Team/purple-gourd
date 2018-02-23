@@ -1,8 +1,9 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import { observable, intercept } from 'mobx'
-import { List, Card, Tabs, Badge } from 'antd'
+import { List, Card, Tabs, Badge, Progress, Tooltip, Icon } from 'antd'
 import Announcement from '@/models/Announcement'
+import User from '@/models/User'
 
 const { TabPane } = Tabs
 
@@ -10,10 +11,12 @@ const { TabPane } = Tabs
 class Dashboard extends React.Component {
   @observable followingAnnouncements = []
   @observable createdAnnouncements = []
+  @observable followers = []
   @observable loading = true
   @observable key
 
-  componentWillMount() {
+  constructor() {
+    super()
     intercept(this, 'key', change => {
       this.handleTagChange(change.newValue)
       return change
@@ -24,36 +27,35 @@ class Dashboard extends React.Component {
     this.key = (this.props.location.state || { tab: 'following' }).tab
   }
 
-  handleTagChange = key => {
+  handleTagChange = async key => {
     this.loading = true
     switch (key) {
       case 'following':
-        Announcement.getFollowingAnnouncements().then(({ data }) => {
-          this.followingAnnouncements = data
-          this.loading = false
-        })
+        const { data: following } = await Announcement.getFollowingAnnouncements()
+        this.followingAnnouncements = following
+        this.loading = false
         break
       case 'created':
-        Announcement.getCreatedAnnouncements().then(({ data }) => {
-          this.createdAnnouncements = data
-          this.loading = false
-        })
+        const { data: created } = await Announcement.getCreatedAnnouncements()
+        this.createdAnnouncements = created
+        const { data: { followers } } = await User.getFollowers()
+        this.followers = followers
+        this.loading = false
         break
       default:
         return
     }
-    this.props.history.replace({
-      state: {
-        tab: key,
-      },
-    })
+    this.props.history.replace({ state: { tab: key } })
   }
 
   handleCardClick = item => e => {
     e.preventDefault()
-    this.props.history.push({
-      pathname: `/${item}`,
-    })
+    this.props.history.push({ pathname: `/${item}` })
+  }
+
+  handleDownload = item => e => {
+    e.preventDefault()
+    window.open(`/api/announcements/${item}/archive`, '_blank')
   }
 
   render() {
@@ -92,13 +94,30 @@ class Dashboard extends React.Component {
               itemLayout="vertical"
               dataSource={this.createdAnnouncements}
               renderItem={item => (
-                <Card hoverable={true} style={{ marginTop: '12px' }} onClick={this.handleCardClick(item._id)}>
-                  <List.Item>
+                <Card
+                  hoverable={true}
+                  style={{ marginTop: '12px' }}
+                  actions={[
+                    <Tooltip title="下载存档">
+                      <Icon type="download" onClick={this.handleDownload(item._id)} />
+                    </Tooltip>,
+                    <Tooltip title="编辑">
+                      <Icon type="edit" />
+                    </Tooltip>,
+                    <Tooltip title="更多">
+                      <Icon type="ellipsis" />
+                    </Tooltip>,
+                  ]}
+                >
+                  <List.Item onClick={this.handleCardClick(item._id)}>
                     <List.Item.Meta
                       title={item.title}
                       description={item.description ? item.description : '无描述...'}
                     />
                     <span style={{ color: 'gray' }}>发布于 {new Date(item.createdAt).toLocaleString('zh-cn')}</span>
+                    <Tooltip title={`${item.files.length} / ${this.followers.length} 人已提交`}>
+                      <Progress percent={item.files.length / this.followers.length * 100} />
+                    </Tooltip>
                   </List.Item>
                 </Card>
               )}

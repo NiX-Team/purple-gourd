@@ -1,24 +1,26 @@
 import { observe, observable, intercept } from 'mobx'
 import { request } from '@/services/fetch'
 
-const User = new class User {
+class UserModel {
   @observable isAuthenticated
 
-  async login(data) {
+  login = async data => {
     let response = await request('/login', 'POST', data)
     this.isAuthenticated = response.response.ok
     return response
   }
 
-  async logout() {
+  logout = async () => {
     this.isAuthenticated = false
     return await request('/logout', 'POST')
   }
 
-  async getUsername() {
-    return await request('/users')
-  }
-}()
+  getUsername = async () => await request('/users')
+
+  getFollowers = async () => await request('/users/followers')
+}
+
+const User = new UserModel()
 
 intercept(User, 'isAuthenticated', change => {
   if (typeof change.newValue === 'string') change.newValue = change.newValue === 'false' ? false : true

@@ -1,7 +1,7 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import { observable } from 'mobx'
-import { Card, Form, Button, Input, Divider, message, Upload, Icon, Tooltip } from 'antd'
+import { Card, Form, Button, Input, Divider, message, Upload, Icon, Tooltip, Tag } from 'antd'
 import Announcement from '@/models/Announcement'
 import styles from './Card.css'
 
@@ -37,7 +37,9 @@ class AnnouncementCard extends React.Component {
     const { data } = await Announcement.getAnnouncementById(id)
     this.announcement = data
     this.loading = false
-    this.setState({ fileList: this.fileListFilter(this.announcement.length ? this.announcement.files[0].list : []) })
+    this.setState({
+      fileList: this.fileListFilter(this.announcement.files.length ? this.announcement.files[0].list : []),
+    })
   }
 
   fileListFilter = list => {
@@ -47,10 +49,12 @@ class AnnouncementCard extends React.Component {
         item.status = 'done'
         item.url = `api/files/${item.fid._id}`
         item.name = (
-          <Tooltip placement="topLeft">
+          <Tooltip placement="topLeft" title={item.fid.originalname}>
             <div className={index === list.length - 1 ? styles.latest : null}>
-              <span>{item.fid.originalname}</span>
-              <span className={styles.time}>{item.fid.updatedAt}</span>
+              <span style={{ color: index === list.length - 1 ? 'green' : 'gray' }}>{item.fid.originalname}</span>
+              <Tag color={index === list.length - 1 ? 'green' : 'gray'} className={styles.time}>
+                {new Date(item.fid.updatedAt).toLocaleString('zh-cn')}
+              </Tag>
             </div>
           </Tooltip>
         )

@@ -1,7 +1,8 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import { observable, intercept } from 'mobx'
-import { List, Card, Tabs, Badge, Progress, Tooltip, Icon } from 'antd'
+import { List, Card, Tabs, Progress, Tooltip, Icon, Tag } from 'antd'
+import moment from 'moment'
 import Announcement from '@/models/Announcement'
 import User from '@/models/User'
 
@@ -58,6 +59,17 @@ class Dashboard extends React.Component {
     window.open(`/api/announcements/${item}/archive`, '_blank')
   }
 
+  statusTag = status => {
+    switch (status) {
+      case 'submitted':
+        return <Tag color="green">已提交</Tag>
+      case 'unsubmitted':
+        return <Tag color="orange">未提交</Tag>
+      default:
+        return null
+    }
+  }
+
   render() {
     return (
       <Card bordered={false}>
@@ -76,12 +88,10 @@ class Dashboard extends React.Component {
                       description={item.description ? item.description : '无描述...'}
                     />
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      {item.files.length === 0 ? (
-                        <Badge status="processing" text="未提交" />
-                      ) : (
-                        <Badge status="success" text="已提交" />
-                      )}
-                      <span style={{ color: 'gray' }}>发布于 {new Date(item.createdAt).toLocaleString('zh-cn')}</span>
+                      {this.statusTag(item.files.length === 0 ? 'unsubmitted' : 'submitted')}
+                      <Tooltip title={() => moment(new Date(item.endTime)).fromNow()}>
+                        <Tag color="orange">截止时间 {new Date(item.endTime).toLocaleString()}</Tag>
+                      </Tooltip>
                     </div>
                   </List.Item>
                 </Card>
@@ -114,10 +124,13 @@ class Dashboard extends React.Component {
                       title={item.title}
                       description={item.description ? item.description : '无描述...'}
                     />
-                    <span style={{ color: 'gray' }}>发布于 {new Date(item.createdAt).toLocaleString('zh-cn')}</span>
                     <Tooltip title={`${item.files.length} / ${this.followers.length} 人已提交`}>
                       <Progress percent={item.files.length / this.followers.length * 100} />
                     </Tooltip>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      {/* {this.statusTag(item.files.length === 0 ? 'unsubmitted' : 'submitted')} */}
+                      <Tag color="green">发布时间 {new Date(item.createdAt).toLocaleString()}</Tag>
+                    </div>
                   </List.Item>
                 </Card>
               )}

@@ -34,6 +34,11 @@ class AnnouncementForm extends React.Component {
 
   state = {
     nowTime: Date.now(),
+    defaultValue: {
+      beginTime: moment(this.nowTime),
+      endTime: moment(this.nowTime).add(1, 'week'),
+      uploadType: 'file',
+    },
   }
 
   handleSubmit = e => {
@@ -58,20 +63,32 @@ class AnnouncementForm extends React.Component {
       }
       delete values['rangeTime']
 
-      Announcement.postAnnouncement(values).then(({ response }) => {
-        if (response.ok) {
-          message.success('发布成功！')
-          this.props.history.push({ pathname: `/dashboard`, state: { tab: 'created' } })
-        } else message.error('发布失败！')
-      })
+      const { history: { location: { state: { type: formType, id } } } } = this.props
+      ;(formType === 'POST' ? Announcement.postAnnouncement(values) : Announcement.updateAnnouncement(id, values)).then(
+        ({ response }) => {
+          if (response.ok) {
+            message.success(formType === 'POST' ? '发布成功！' : '保存成功！')
+            this.props.history.push({ pathname: `/dashboard`, state: { tab: 'created' } })
+          } else message.error(formType === 'POST' ? '发布失败！' : '保存失败！')
+        },
+      )
     })
   }
 
+  async componentDidMount() {
+    const { history: { location: { state: { type: formType, id } } } } = this.props
+    if (formType === 'EDIT') {
+      const { data } = await Announcement.getAnnouncementById(id)
+      this.setState({ defaultValue: data })
+    }
+  }
+
   render() {
+    const { history: { location: { state: { type: formType } } } } = this.props
+    const { defaultValue } = this.state
     const { getFieldDecorator, getFieldValue } = this.props.form
-    const { nowTime } = this.state
     const rangeConfig = {
-      initialValue: [moment(nowTime), moment(nowTime).add(1, 'week')],
+      initialValue: [moment(defaultValue.beginTime), moment(defaultValue.endTime)],
       rules: [{ type: 'array', required: true, message: '请选择起止时间！' }],
     }
     const formItemLayout = {
@@ -114,21 +131,26 @@ class AnnouncementForm extends React.Component {
     })
     return (
       <Card bordered={false}>
-        <Card.Meta title={<h1>发布</h1>} />
+        <Card.Meta title={<h1>{formType === 'POST' ? '发布' : '编辑'}</h1>} />
         <Form onSubmit={this.handleSubmit}>
           <FormItem label="标题">
             {getFieldDecorator('title', {
               rules: [{ required: true, message: '请输入公告标题！' }],
+              initialValue: defaultValue.title,
             })(<Input />)}
           </FormItem>
-          <FormItem label="描述">{getFieldDecorator('description')(<Input.TextArea rows={4} />)}</FormItem>
+          <FormItem label="描述">
+            {getFieldDecorator('description', {
+              initialValue: defaultValue.description,
+            })(<Input.TextArea rows={4} />)}
+          </FormItem>
           <FormItem label="起止时间">
             {getFieldDecorator('rangeTime', rangeConfig)(<RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
           </FormItem>
           <FormItem label="公告类型">
             {getFieldDecorator('uploadType', {
               rules: [{ required: true, message: '请选择你的公告类型!' }],
-              initialValue: 'file',
+              initialValue: defaultValue.uploadType,
             })(
               <Select placeholder="选择公告的收取类型" onChange={this.handleSelectChange} disabled>
                 <Option value="form">表格</Option>
@@ -148,7 +170,7 @@ class AnnouncementForm extends React.Component {
           )}
           <FormItem>
             <Button type="primary" htmlType="submit">
-              发布
+              {formType === 'POST' ? '发布' : '保存'}
             </Button>
           </FormItem>
         </Form>

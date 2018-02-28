@@ -16,9 +16,11 @@ function PostButton(props) {
         marginRight: '12px',
       }}
     >
-      <Link to="/post">
-        <Avatar size="large" icon="plus" className={styles.add} />
-      </Link>
+      {props.history.location.pathname === '/form' ? null : (
+        <Link to={{ pathname: '/form', state: { type: 'POST' } }}>
+          <Avatar size="large" icon="plus" className={styles.add} />
+        </Link>
+      )}
     </Affix>
   )
 }

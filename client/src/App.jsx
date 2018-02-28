@@ -24,7 +24,7 @@ class App extends React.Component {
           <Switch>
             <Route exact path="/" render={() => <Redirect to="/dashboard" />} />
             <Route path="/login" component={Login} />
-            <Route path="/post" component={AnnouncementForm} />
+            <Route path="/form" component={AnnouncementForm} />
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/:id" component={AnnouncementCard} />
           </Switch>

@@ -59,6 +59,11 @@ class Dashboard extends React.Component {
     window.open(`/api/announcements/${item}/archive`, '_blank')
   }
 
+  handleEdit = item => e => {
+    e.preventDefault()
+    this.props.history.push({ pathname: '/form', state: { type: 'EDIT', id: item } })
+  }
+
   statusTag = status => {
     switch (status) {
       case 'submitted':
@@ -112,7 +117,7 @@ class Dashboard extends React.Component {
                       <Icon type="download" onClick={this.handleDownload(item._id)} />
                     </Tooltip>,
                     <Tooltip title="编辑">
-                      <Icon type="edit" />
+                      <Icon type="edit" onClick={this.handleEdit(item._id)} />
                     </Tooltip>,
                     <Tooltip title="更多">
                       <Icon type="ellipsis" />
@@ -129,7 +134,8 @@ class Dashboard extends React.Component {
                     </Tooltip>
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                       {/* {this.statusTag(item.files.length === 0 ? 'unsubmitted' : 'submitted')} */}
-                      <Tag color="green">发布时间 {new Date(item.createdAt).toLocaleString()}</Tag>
+                      <Tag color="green">开始时间 {new Date(item.beginTime).toLocaleString()}</Tag>
+                      <Tag color="orange">截止时间 {new Date(item.endTime).toLocaleString()}</Tag>
                     </div>
                   </List.Item>
                 </Card>

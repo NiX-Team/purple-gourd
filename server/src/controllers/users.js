@@ -23,7 +23,7 @@ class Users {
   }
 
   async getUserInfo(ctx) {
-    ctx.body = await User.findOne({ username: ctx.session.username }, ctx.query)
+    ctx.body = await User.findOne({ username: ctx.session.username }).select('-password')
   }
 
   async addUserFollowing(ctx) {
@@ -56,13 +56,6 @@ class Users {
       },
     })
     ctx.body = null
-  }
-
-  query(obj) {
-    return async (ctx, next) => {
-      ctx.query = obj
-      await next()
-    }
   }
 }
 

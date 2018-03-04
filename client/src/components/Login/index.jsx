@@ -12,8 +12,8 @@ class LoginForm extends React.Component {
     e.preventDefault()
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        User.login(values).then(res => {
-          const { response } = res
+        User.login(values).then(({ response }) => {
+          if (this.props.location.from === '/login') this.props.location.from = '/dashboard'
           if (response.ok) {
             message.success('登录成功！')
             this.props.history.push(this.props.location.from || '/dashboard')

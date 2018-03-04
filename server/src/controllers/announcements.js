@@ -102,6 +102,8 @@ class Announcements {
   async uploadFile(ctx) {
     const id = ctx.params.id
     const result = notNull(await Announcement.findById(id))
+    if (result.creator.equals(ctx.session.uid))
+      ctx.body = ctx.throw(403, `Creator can't upload file, please wait for the next version(team support)`)
     const file = ctx.req.file
     const hash = crypto.createHash('md5')
     hash.update(file.buffer)

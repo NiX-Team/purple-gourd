@@ -3,6 +3,7 @@ import { observer } from 'mobx-react'
 import { observable } from 'mobx'
 import { Card, Form, Button, Input, Divider, message, Upload, Icon, Tooltip, Tag } from 'antd'
 import Announcement from '@/models/Announcement'
+import User from '@/models/User'
 import styles from './Card.css'
 
 const MAX_FILE_SIZE = 16
@@ -27,6 +28,7 @@ class AnnouncementCard extends React.Component {
   announcement = {
     formField: [],
   }
+  @observable userInfo = {}
   @observable loading = true
   state = {
     fileList: [],
@@ -35,7 +37,9 @@ class AnnouncementCard extends React.Component {
   async componentDidMount() {
     const id = this.props.match.params.id
     const { data } = await Announcement.getAnnouncementById(id)
+    const { data: userInfo } = await User.getUserInfo()
     this.announcement = data
+    this.userInfo = userInfo
     this.loading = false
     this.setState({
       fileList: this.fileListFilter(this.announcement.files.length ? this.announcement.files[0].list : []),
@@ -115,7 +119,7 @@ class AnnouncementCard extends React.Component {
                   </Button>
                 </Form.Item>,
               )
-          ) : (
+          ) : this.announcement.creator === this.userInfo._id ? null : (
             <FileUpload {...uploadProps} />
           )}
         </Form>

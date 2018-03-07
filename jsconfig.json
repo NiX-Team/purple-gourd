@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "es6",
     "allowSyntheticDefaultImports": true,
     "jsx": "react", // Must have, otherwise unable to parse jsx file
-    "target": "es6",
+    "target": "esnext",
     "experimentalDecorators": true,
     "baseUrl": "./",
     "paths": {

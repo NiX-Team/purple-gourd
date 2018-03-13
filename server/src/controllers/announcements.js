@@ -147,11 +147,11 @@ class Announcements {
     result.files.forEach(item => {
       const file = item.list.pop().fid
       archive.append(file.buffer, {
-        name: `${item.submitter.username}.${file.originalname.split('.').pop()}`,
+        name: `${item.submitter.extend.studentId}_${item.submitter.extend.name}.${file.originalname.split('.').pop()}`,
       })
     })
     archive.finalize()
-    ctx.set('Content-Disposition', 'inline; filename=Archive.zip')
+    ctx.set('Content-Disposition', `inline; filename=Archive-${result.title}.zip`)
     ctx.set('Content-Type', 'application/zip')
     ctx.body = archive.pipe(PassThrough())
   }

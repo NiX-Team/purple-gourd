@@ -1,7 +1,7 @@
 version: '2'
 services:
   app:
-    build: .
+    image: crazymousethief/purple-gourd:latest
   nginx:
     image: nginx:latest
     depends_on:
@@ -14,7 +14,7 @@ services:
     links:
       - node
     ports:
-      - "3000:80"
+      - "80:80"
     restart: always
   node:
     image: node:latest
@@ -36,6 +36,6 @@ services:
   redis:
     image: redis:latest
   mongo:
-    image: mongo
+    image: mongo:latest
     volumes:
       - ./data:/data/db

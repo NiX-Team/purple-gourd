@@ -10,7 +10,10 @@
     "dev:server": "npx babel-watch . --inspect",
     "build": "npx webpack",
     "lint": "npx eslint \"./**/*.jsx\" \"./**/*.js\"",
-    "format": "npx prettier --write \"./**/*.jsx\" \"./**/*.js\""
+    "format": "npx prettier --write \"./**/*.jsx\" \"./**/*.js\"",
+    "docker:start": "docker-compose up -d",
+    "docker:stop": "docker-compose down -v",
+    "docker:update": "docker-compose pull && docker-compose rm -v -f && docker-compose up -d"
   },
   "husky": {
     "hooks": {
